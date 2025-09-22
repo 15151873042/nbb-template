@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/nbb-template-system?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+    username: root
+    password: root
+  redis:
+    host: localhost
+    port: 6379
+    database: 10
+    password: root
+
+sys:
+  # 验证码类型 math 数字计算 char 字符验证
+  captcha-type: math
+
+
+logging:
+  file:
+    name: nbb-template-admin
+    path: d:/logs/
+  level:
+    com.nbb.template.system.mapper: debug

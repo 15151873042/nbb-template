@@ -47,6 +47,10 @@ public class CommonResult<T> implements Serializable {
         return error(serviceException.getCode(), serviceException.getMsg());
     }
 
+    public static <T> CommonResult<T> error(String message) {
+        return error(CoreErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), message);
+    }
+
     public static <T> CommonResult<T> error(Integer code, String message) {
         Assert.isTrue(!CoreErrorCodeConstants.SUCCESS.getCode().equals(code), "code 必须是错误的！");
         CommonResult<T> result = new CommonResult<>();
