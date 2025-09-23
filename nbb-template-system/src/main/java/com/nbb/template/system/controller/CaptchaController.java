@@ -6,7 +6,7 @@ import com.google.code.kaptcha.Producer;
 import com.nbb.template.system.core.constant.CoreCacheConstants;
 import com.nbb.template.system.core.domain.CommonResult;
 import com.nbb.template.system.domain.vo.CaptchaImageVO;
-import com.nbb.template.system.properties.SysConfig;
+import com.nbb.template.system.properties.SystemConfig;
 import com.nbb.template.system.service.SysConfigService;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -60,7 +60,7 @@ public class CaptchaController {
         BufferedImage image = null;
 
         // 生成验证码
-        String captchaType = SysConfig.getCaptchaType();
+        String captchaType = SystemConfig.getCaptchaType();
         if ("math".equals(captchaType)) {
             String capText = captchaProducerMath.createText();
             capStr = capText.substring(0, capText.lastIndexOf("@"));
