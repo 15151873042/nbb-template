@@ -1,7 +1,14 @@
 package com.nbb.template.system.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.nbb.template.system.core.domain.CommonResult;
+import com.nbb.template.system.domain.dto.LoginDTO;
+import com.nbb.template.system.domain.vo.LoginVO;
+import com.nbb.template.system.service.LoginService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 /**
  * @author 胡鹏
@@ -9,8 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 
-    @RequestMapping("/login")
-    public String login() {
-        return "login";
+    @Resource
+    private LoginService loginService;
+
+    @PostMapping("/login")
+    public CommonResult<LoginVO> login(@RequestBody LoginDTO dto) {
+        LoginVO vo = loginService.login(dto);
+        return CommonResult.success(vo);
     }
 }
