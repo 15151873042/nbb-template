@@ -1,0 +1,9 @@
+POST http://localhost:8095/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin1232",
+  "code": "",
+  "uuid": ""
+}

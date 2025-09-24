@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 8095
 
 spring:
   datasource:
@@ -23,4 +23,8 @@ logging:
     path: d:/logs/
   level:
     com.nbb.template.system.mapper: debug
-
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-value: id
+      logic-not-delete-value: 0

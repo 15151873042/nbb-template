@@ -1,6 +1,7 @@
 package com.nbb.template.system.core.exception;
 
 import com.nbb.template.system.core.domain.ErrorCode;
+import com.nbb.template.system.core.enums.CoreErrorCodeConstants;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,6 +23,11 @@ public class ServiceException extends RuntimeException{
 
     public ServiceException(Integer code, String message) {
         this.code = code;
+        this.msg = message;
+    }
+
+    public ServiceException(String message) {
+        this.code = CoreErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode();
         this.msg = message;
     }
 
