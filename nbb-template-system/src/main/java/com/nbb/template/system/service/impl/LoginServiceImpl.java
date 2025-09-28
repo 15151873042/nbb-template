@@ -41,7 +41,7 @@ public class LoginServiceImpl implements LoginService {
 
     public static void main(String[] args) {
         // 明文密码
-        String password = "admin123";
+        String password = "hupeng";
 
         // 1. 加密密码（自动生成盐值和默认工作因子）
         String hash = BCrypt.hashpw(password);

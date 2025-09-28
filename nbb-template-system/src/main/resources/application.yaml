@@ -1,0 +1,13 @@
+system:
+  # \u9A8C\u8BC1\u7801\u7C7B\u578B math \u6570\u5B57\u8BA1\u7B97 char \u5B57\u7B26\u9A8C\u8BC1
+  captcha-type: math
+
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-value: id
+      logic-not-delete-value: 0
+
+logging:
+  level:
+    com.nbb.template.system.mapper: debug

@@ -22,14 +22,30 @@
             <groupId>com.nbb.template</groupId>
             <artifactId>nbb-template-system</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.nbb.template</groupId>
+            <artifactId>nbb-template-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
-            <!-- 将 Spring Boot 应用及其所有依赖（第三方库、配置文件等）打包成一个可独立运行的 JAR 或 WAR 文件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <executions>
                     <execution>
                         <id>repackage</id>
@@ -38,14 +54,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- deploy时候，忽略改模块 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
             </plugin>
         </plugins>
     </build>

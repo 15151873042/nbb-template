@@ -1,5 +1,5 @@
 server:
-  port: 8095
+  port: 9090
 
 spring:
   datasource:
@@ -12,19 +12,8 @@ spring:
     database: 10
     password: root
 
-system:
-  # 验证码类型 math 数字计算 char 字符验证
-  captcha-type: math
-
-
 logging:
   file:
     name: nbb-template-admin
     path: d:/logs/
-  level:
-    com.nbb.template.system.mapper: debug
-mybatis-plus:
-  global-config:
-    db-config:
-      logic-delete-value: id
-      logic-not-delete-value: 0
+
