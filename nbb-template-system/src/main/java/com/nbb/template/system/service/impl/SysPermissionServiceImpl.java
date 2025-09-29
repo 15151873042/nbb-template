@@ -1,5 +1,6 @@
 package com.nbb.template.system.service.impl;
 
+import com.nbb.template.system.core.utils.SecurityUtils;
 import com.nbb.template.system.service.SysMenuService;
 import com.nbb.template.system.service.SysPermissionService;
 import com.nbb.template.system.service.SysUserService;
@@ -25,7 +26,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Override
     public Set<String> listRolePermission(Long userId) {
-        if (this.isUserAdmin(userId)) {
+        if (SecurityUtils.isAdmin(userId)) {
             return Collections.singleton("admin");
         }
 
@@ -34,7 +35,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Override
     public Set<String> listMenuPermission(Long userId) {
-        if (this.isUserAdmin(userId)) {
+        if (SecurityUtils.isAdmin(userId)) {
             return Collections.singleton("*:*:*");
         }
 
@@ -44,12 +45,5 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                 .flatMap(roleId -> sysMenuService.listPermsByRoleId(roleId).stream())
                 .collect(Collectors.toSet());
     }
-
-
-    private boolean isUserAdmin(Long userId) {
-        return userId != null && 1L == userId;
-    }
-
-
 
 }

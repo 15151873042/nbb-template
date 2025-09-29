@@ -4,6 +4,19 @@ package com.nbb.template.system.core.constant;
  * @author 胡鹏
  */
 public class CoreCacheConstants {
+
+
+
+    /**
+     * 角色所拥有的菜单 redis key
+     */
+    public static final String ROLE_MENU_KEY = "role_menu";
+    /**
+     * 用户所拥有的角色 redis key
+     */
+    public static final String USER_ROLE_KEY = "user_role";
+
+
     /**
      * 登录用户 redis key
      */

@@ -1,5 +1,12 @@
+spring:
+  cache:
+    type: REDIS
+    redis:
+      time-to-live: 1h # 设置过期时间为 1 小时
+      key-prefix: 'spring_cache:'
+
 system:
-  # \u9A8C\u8BC1\u7801\u7C7B\u578B math \u6570\u5B57\u8BA1\u7B97 char \u5B57\u7B26\u9A8C\u8BC1
+  # 验证码类型 math 数字计算 char 字符验证
   captcha-type: math
 
 mybatis-plus:

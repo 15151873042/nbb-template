@@ -3,10 +3,13 @@ package com.nbb.template.system.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import com.nbb.template.system.core.domain.CommonResult;
 import com.nbb.template.system.domain.dto.LoginDTO;
+import com.nbb.template.system.domain.entity.SysMenuDO;
 import com.nbb.template.system.domain.entity.SysUserDO;
 import com.nbb.template.system.domain.vo.LoginVO;
+import com.nbb.template.system.domain.vo.RouterVO;
 import com.nbb.template.system.domain.vo.UserPermissionInfoVO;
 import com.nbb.template.system.service.LoginService;
+import com.nbb.template.system.service.SysMenuService;
 import com.nbb.template.system.service.SysPermissionService;
 import com.nbb.template.system.service.SysUserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,7 +33,8 @@ public class LoginController {
     private SysUserService sysUserService;
     @Resource
     private SysPermissionService permissionService;
-
+    @Resource
+    private SysMenuService menuService;
 
 
     @PostMapping("/login")
@@ -66,5 +71,18 @@ public class LoginController {
                 .build();
 
         return CommonResult.success(vo);
+    }
+
+
+    /**
+     * 获取路由信息
+     *
+     * @return 路由信息
+     */
+    @GetMapping("getRouters")
+    public CommonResult<RouterVO> getRouters() {
+        long loginUserId = StpUtil.getLoginIdAsLong();
+        List<SysMenuDO> routers = menuService.getMenuTreeByUserId(loginUserId);
+        return CommonResult.success(null);
     }
 }

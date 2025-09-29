@@ -3,6 +3,7 @@ package com.nbb.template.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
+import com.nbb.template.system.core.constant.CoreCacheConstants;
 import com.nbb.template.system.domain.entity.SysRoleDO;
 import com.nbb.template.system.domain.entity.SysUserDO;
 import com.nbb.template.system.domain.entity.SysUserRoleDO;
@@ -10,6 +11,7 @@ import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysUserMapper;
 import com.nbb.template.system.mapper.SysUserRoleMapper;
 import com.nbb.template.system.service.SysUserService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -54,6 +56,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
     }
 
     @Override
+    @Cacheable(cacheNames = CoreCacheConstants.USER_ROLE_KEY, key = "#id", unless = "#result == null")
     public Set<Long> listRoleIdById(Long id) {
         MPJLambdaWrapper<SysUserRoleDO> wrapper = new MPJLambdaWrapper<SysUserRoleDO>()
                 .innerJoin(SysRoleDO.class, SysRoleDO::getId, SysUserRoleDO::getRoleId)
