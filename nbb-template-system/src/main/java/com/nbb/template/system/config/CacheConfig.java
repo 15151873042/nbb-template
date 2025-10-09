@@ -1,60 +1,22 @@
 package com.nbb.template.system.config;
 
 import cn.hutool.core.util.StrUtil;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.StringUtils;
-
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author 胡鹏
  */
 @Configuration
 public class CacheConfig {
-
-//    /**
-//     * 配置 Redis 缓存管理器，使用 Jackson 序列化
-//     */
-//    @Bean
-//    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
-//        ObjectMapper copyObjectMapper = objectMapper.copy();
-//        // 如果没有此配置项，value值序列化到redis是一个纯json，反序列化时候，无法匹配对应的Class对象，会报java.lang.ClassCastException: java.util.LinkedHashMap cannot be cast to XXX
-//        copyObjectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-//
-//        Jackson2JsonRedisSerializer<Object> jacksonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-//        jacksonSerializer.setObjectMapper(copyObjectMapper);
-//
-//        // 2. 配置缓存键和值的序列化方式
-//        RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-//                .entryTtl(Duration.ofMinutes(30)) // 默认缓存过期时间
-//                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())) // 键用 String 序列化
-//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jacksonSerializer)) // 值用 Jackson 序列化
-//                .disableCachingNullValues(); // 不缓存 null 值
-//
-//
-//        // 4. 创建缓存管理器
-//        return RedisCacheManager.builder(redisConnectionFactory)
-//                .cacheDefaults(defaultCacheConfig) // 默认配置
-//                .build();
-//    }
 
 
     /**

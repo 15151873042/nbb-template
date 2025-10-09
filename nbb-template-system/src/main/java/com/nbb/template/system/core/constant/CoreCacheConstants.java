@@ -5,7 +5,10 @@ package com.nbb.template.system.core.constant;
  */
 public class CoreCacheConstants {
 
-
+    /**
+     * 角色所拥有的菜单 redis key
+     */
+    public static final String ROLE_MENU_PERMS_KEY = "role_menu_perms";
 
     /**
      * 角色所拥有的菜单 redis key

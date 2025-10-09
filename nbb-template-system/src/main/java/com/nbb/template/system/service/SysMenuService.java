@@ -2,6 +2,8 @@ package com.nbb.template.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.nbb.template.system.domain.entity.SysMenuDO;
+import com.nbb.template.system.domain.vo.MenuTreeVO;
+import com.nbb.template.system.domain.vo.RouterVO;
 
 import java.util.List;
 import java.util.Set;
@@ -13,7 +15,7 @@ public interface SysMenuService extends IService<SysMenuDO> {
 
 
     /**
-     *  获取所有角色的权限标识
+     *  获取角色所拥有菜单权限标识
      * @param roleId 角色id
      * @return
      */
@@ -32,5 +34,13 @@ public interface SysMenuService extends IService<SysMenuDO> {
      * @param userId 用户ID
      * @return 菜单列表
      */
-    List<SysMenuDO> getMenuTreeByUserId(long userId);
+    List<MenuTreeVO> getMenuTreeByUserId(long userId);
+
+    /**
+     * 构建前端路由所需要的菜单
+     *
+     * @param menus 菜单列表
+     * @return 路由列表
+     */
+    List<RouterVO> buildMenus(List<MenuTreeVO> menus);
 }

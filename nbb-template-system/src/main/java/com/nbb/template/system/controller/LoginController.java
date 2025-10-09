@@ -3,9 +3,9 @@ package com.nbb.template.system.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import com.nbb.template.system.core.domain.CommonResult;
 import com.nbb.template.system.domain.dto.LoginDTO;
-import com.nbb.template.system.domain.entity.SysMenuDO;
 import com.nbb.template.system.domain.entity.SysUserDO;
 import com.nbb.template.system.domain.vo.LoginVO;
+import com.nbb.template.system.domain.vo.MenuTreeVO;
 import com.nbb.template.system.domain.vo.RouterVO;
 import com.nbb.template.system.domain.vo.UserPermissionInfoVO;
 import com.nbb.template.system.service.LoginService;
@@ -80,9 +80,10 @@ public class LoginController {
      * @return 路由信息
      */
     @GetMapping("getRouters")
-    public CommonResult<RouterVO> getRouters() {
+    public CommonResult<List<RouterVO>> getRouters() {
         long loginUserId = StpUtil.getLoginIdAsLong();
-        List<SysMenuDO> routers = menuService.getMenuTreeByUserId(loginUserId);
-        return CommonResult.success(null);
+        List<MenuTreeVO> menuTreeList = menuService.getMenuTreeByUserId(loginUserId);
+        List<RouterVO> routerList = menuService.buildMenus(menuTreeList);
+        return CommonResult.success(routerList);
     }
 }
