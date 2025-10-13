@@ -214,10 +214,9 @@ function getList() {
   const [beginTime, endTime] = Array.isArray(dateRange.value) ? dateRange.value : []
   const params = {...queryParams.value, beginTime, endTime};
 
-  listType(params).then(response => {
-    const {data} = response
-    typeList.value = data.list
-    total.value = data.total
+  listType(params).then(respData => {
+    typeList.value = respData.list
+    total.value = respData.total
     loading.value = false
   })
 }

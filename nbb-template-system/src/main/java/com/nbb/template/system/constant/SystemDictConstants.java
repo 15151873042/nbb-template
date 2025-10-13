@@ -15,7 +15,11 @@ public class SystemDictConstants {
 
     /** 是否菜单外链（是） */
     public static final String YES_FRAME = "0";
-
     /** 是否菜单外链（否） */
     public static final String NO_FRAME = "1";
+
+    /** 状态：启用 */
+    public static final String STATUS_ENABLE = "0";
+    /** 状态：禁用 */
+    public static final String STATUS_DISABLE = "1";
 }
