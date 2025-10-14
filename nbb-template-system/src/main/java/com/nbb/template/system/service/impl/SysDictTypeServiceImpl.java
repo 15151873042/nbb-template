@@ -1,10 +1,16 @@
 package com.nbb.template.system.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.lock.annotation.Lock4j;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nbb.template.system.core.constant.CoreCacheConstants;
 import com.nbb.template.system.core.domain.PageResult;
+import com.nbb.template.system.core.utils.ServiceExceptionUtil;
+import com.nbb.template.system.domain.dto.DictTypeAddDTO;
 import com.nbb.template.system.domain.dto.DictTypePageDTO;
+import com.nbb.template.system.domain.dto.DictTypeUpdateDTO;
 import com.nbb.template.system.domain.entity.SysDictDataDO;
 import com.nbb.template.system.domain.entity.SysDictTypeDO;
 import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
@@ -29,15 +35,16 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     private SysDictDataMapper dictDataMapper;
 
     @Override
-    public PageResult<SysDictTypeDO> listDictTypePage(DictTypePageDTO dto) {
+    public PageResult<SysDictTypeDO> listPageDictType(DictTypePageDTO queryDTO) {
         LambdaQueryWrapper<SysDictTypeDO> queryWrapper = new LambdaQueryWrapperX<SysDictTypeDO>()
-                .likeIfPresent(SysDictTypeDO::getDictName, dto.getDictName())
-                .likeIfPresent(SysDictTypeDO::getDictType, dto.getDictType())
-                .eqIfPresent(SysDictTypeDO::getStatus, dto.getStatus())
-                .geIfPresent(SysDictTypeDO::getCreateTime, dto.getBeginTime())
-                .leIfPresent(SysDictTypeDO::getCreateTime, dto.getEndTime())
-                .orderByAsc(SysDictTypeDO::getCreateTime, SysDictTypeDO::getId);
-        PageResult<SysDictTypeDO> pageResult = getBaseMapper().selectPage(dto, queryWrapper);
+                .likeIfPresent(SysDictTypeDO::getDictName, queryDTO.getDictName())
+                .likeIfPresent(SysDictTypeDO::getDictType, queryDTO.getDictType())
+                .eqIfPresent(SysDictTypeDO::getStatus, queryDTO.getStatus())
+                .geIfPresent(SysDictTypeDO::getCreateTime, queryDTO.getBeginTime())
+                .leIfPresent(SysDictTypeDO::getCreateTime, queryDTO.getEndTime())
+                .orderByDesc(SysDictTypeDO::getCreateTime)
+                .orderByAsc(SysDictTypeDO::getId);
+        PageResult<SysDictTypeDO> pageResult = getBaseMapper().selectPage(queryDTO, queryWrapper);
         return pageResult;
     }
 
@@ -51,4 +58,50 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
 
         return dictDataMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public SysDictTypeDO selectDictTypeById(Long id) {
+        return this.getBaseMapper().selectById(id);
+    }
+
+    @Override
+    public boolean isDictTypeUnique(String dictType, Long excludeId) {
+        LambdaQueryWrapperX<SysDictTypeDO> queryWrapper = new LambdaQueryWrapperX<SysDictTypeDO>()
+                .eq(SysDictTypeDO::getDictType, dictType)
+                .neIfPresent(SysDictTypeDO::getId, excludeId);
+
+        Long count = getBaseMapper().selectCount(queryWrapper);
+        return count == 0;
+    }
+
+    @Override
+    @Lock4j(name="unique:sys_dict_type", keys = {"#addDTO.dictType"})
+    public int addDictType(DictTypeAddDTO addDTO) {
+        // 校验数据是否存在
+        this.checkDictTypeUnique(addDTO.getDictType(), null);
+
+        // 新增
+        SysDictTypeDO dictTypeDO = BeanUtil.copyProperties(addDTO, SysDictTypeDO.class);
+        return this.getBaseMapper().insert(dictTypeDO);
+    }
+
+    @Override
+    @Lock4j(name="unique:sys_dict_type", keys = {"#updateDTO.dictType"})
+    public int updateDictType(DictTypeUpdateDTO updateDTO) {
+        // 校验数据是否存在
+        this.checkDictTypeUnique(updateDTO.getDictType(), updateDTO.getId());
+
+        // 修改
+        SysDictTypeDO sysDictTypeDO = BeanUtil.copyProperties(updateDTO, SysDictTypeDO.class);
+        return this.getBaseMapper().updateEdit(sysDictTypeDO);
+    }
+
+
+    void checkDictTypeUnique(String dictType, Long excludeId) {
+        boolean unique = this.isDictTypeUnique(dictType, excludeId);
+        if (!unique) {
+            throw ServiceExceptionUtil.dataExistException();
+        }
+    }
+
 }

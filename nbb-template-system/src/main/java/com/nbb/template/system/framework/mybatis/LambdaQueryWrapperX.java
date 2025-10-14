@@ -10,6 +10,13 @@ import org.springframework.util.StringUtils;
  */
 public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
 
+    @Override
+    public LambdaQueryWrapperX<T> eq(SFunction<T, ?> column, Object val) {
+        super.eq(column, val);
+        return this;
+    }
+
+
     public LambdaQueryWrapperX<T> eqIfPresent(SFunction<T, ?> column, Object val) {
         if (ObjectUtil.isNotEmpty(val)) {
             return (LambdaQueryWrapperX<T>) super.eq(column, val);
@@ -38,6 +45,10 @@ public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
 
     public LambdaQueryWrapperX<T> leIfPresent(SFunction<T, ?> column, Object val) {
         return val != null ? (LambdaQueryWrapperX)super.le(column, val) : this;
+    }
+
+    public LambdaQueryWrapperX<T> neIfPresent(SFunction<T, ?> column, Object val) {
+        return ObjectUtil.isNotEmpty(val) ? (LambdaQueryWrapperX)super.ne(column, val) : this;
     }
 
 }

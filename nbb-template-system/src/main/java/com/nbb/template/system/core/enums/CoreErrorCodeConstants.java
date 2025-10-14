@@ -11,4 +11,6 @@ public interface CoreErrorCodeConstants {
 
     ErrorCode INTERNAL_SERVER_ERROR = new ErrorCode(500, "系统异常");
 
+    ErrorCode DATA_EXIST = new ErrorCode(1001, "数据已存在");
+
 }
