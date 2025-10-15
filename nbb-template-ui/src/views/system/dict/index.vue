@@ -270,8 +270,8 @@ function handleSelectionChange(selection) {
 function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
-  getType(id).then(response => {
-    form.value = response.data
+  getType(id).then(respData => {
+    form.value = respData
     open.value = true
     title.value = "修改字典类型"
   })
