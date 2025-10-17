@@ -5,7 +5,6 @@ import com.nbb.template.system.core.domain.PageResult;
 import com.nbb.template.system.domain.dto.DictTypeAddDTO;
 import com.nbb.template.system.domain.dto.DictTypePageDTO;
 import com.nbb.template.system.domain.dto.DictTypeUpdateDTO;
-import com.nbb.template.system.domain.entity.SysDictDataDO;
 import com.nbb.template.system.domain.entity.SysDictTypeDO;
 
 import java.util.List;
@@ -22,14 +21,6 @@ public interface SysDictTypeService extends IService<SysDictTypeDO> {
      * @return 字典类型列表
      */
     PageResult<SysDictTypeDO> listPageDictType(DictTypePageDTO queryDTO);
-
-    /**
-     * 根据字典类型查询信息
-     *
-     * @param dictType 字典类型
-     * @return 字典类型列表
-     */
-    List<SysDictDataDO> selectDictDataByType(String dictType);
 
     /**
      * 根据字典类型ID查询信息

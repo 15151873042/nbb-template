@@ -44,4 +44,7 @@ public class SysDictDataDO extends BaseDO implements Serializable {
 
     /** 状态（0正常 1停用） */
     private String status;
+
+    /** 备注 */
+    private String remark;
 }

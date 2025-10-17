@@ -225,9 +225,9 @@ const { queryParams, form, rules } = toRefs(data)
 
 /** 查询字典类型详细 */
 function getTypes(dictId) {
-  getType(dictId).then(response => {
-    queryParams.value.dictType = response.data.dictType
-    defaultDictType.value = response.data.dictType
+  getType(dictId).then(respData => {
+    queryParams.value.dictType = respData.dictType
+    defaultDictType.value = respData.dictType
     getList()
   })
 }
@@ -242,10 +242,9 @@ function getTypeList() {
 /** 查询字典数据列表 */
 function getList() {
   loading.value = true
-  listData(queryParams.value).then(response => {
-    const {data} = response
-    dataList.value = data.list
-    total.value = data.total
+  listData(queryParams.value).then(respData => {
+    dataList.value = respData.list
+    total.value = respData.total
     loading.value = false
   })
 }
@@ -309,8 +308,8 @@ function handleSelectionChange(selection) {
 function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
-  getData(id).then(response => {
-    form.value = response.data
+  getData(id).then(respData => {
+    form.value = respData
     open.value = true
     title.value = "修改字典数据"
   })
