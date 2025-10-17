@@ -6,6 +6,7 @@ import com.nbb.template.system.domain.dto.DictDataAddDTO;
 import com.nbb.template.system.domain.dto.DictDataPageDTO;
 import com.nbb.template.system.domain.dto.DictDataUpdateDTO;
 import com.nbb.template.system.domain.entity.SysDictDataDO;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,16 +23,19 @@ public interface SysDictDataService extends IService<SysDictDataDO> {
      */
     PageResult<SysDictDataDO> listPage(DictDataPageDTO dto);
 
-    int addDictData(DictDataAddDTO addDTO);
+    @Transactional
+    void addDictData(DictDataAddDTO addDTO);
 
-    int updateDictData(DictDataUpdateDTO updateDTO);
+    @Transactional
+    void updateDictData(DictDataUpdateDTO updateDTO);
 
     /**
      * 批量删除字典值
      *
      * @param ids 需要删除的字典ID
      */
-    int deleteDictDataByIds(List<Long> ids, String dictType);
+    @Transactional
+    void deleteDictDataByIds(List<Long> ids);
 
     /**
      * 根据字典类型查询信息
@@ -40,4 +44,8 @@ public interface SysDictDataService extends IService<SysDictDataDO> {
      * @return 字典类型列表
      */
     List<SysDictDataDO> listDictDataByDictType(String dictType);
+
+    void cacheEvitDictDataByDicType(String dictTye);
+
+
 }

@@ -49,8 +49,9 @@ public class SysDictDataController {
      */
     @SaCheckPermission("system:dict:add")
     @PostMapping
-    public CommonResult<Integer> add(@Validated @RequestBody DictDataAddDTO addDTO) {
-        return CommonResult.success(dictDataService.addDictData(addDTO));
+    public CommonResult<Void> add(@Validated @RequestBody DictDataAddDTO addDTO) {
+        dictDataService.addDictData(addDTO);
+        return CommonResult.success();
     }
 
     /**
@@ -58,12 +59,13 @@ public class SysDictDataController {
      */
     @SaCheckPermission("system:dict:edit")
     @PutMapping
-    public CommonResult<Integer> edit(@Validated @RequestBody DictDataUpdateDTO updateDTO) {
-        // 先根据id查询数据，并赋值字典类型，为了接下来更新数据是，可以缓存失效
-        SysDictDataDO existDictDataDO = dictDataService.getById(updateDTO.getId());
-        updateDTO.setDictType(existDictDataDO.getDictType());
+    public CommonResult<Void> edit(@Validated @RequestBody DictDataUpdateDTO updateDTO) {
+//
+//        SysDictDataDO byId = dictDataService.getById(updateDTO.getId());
+//        dictDataService.cacheEvitDictDataByDicType(byId.getDictType());
 
-        return CommonResult.success(dictDataService.updateDictData(updateDTO));
+        dictDataService.updateDictData(updateDTO);
+        return CommonResult.success();
     }
 
     /**
@@ -71,12 +73,9 @@ public class SysDictDataController {
      */
     @SaCheckPermission("system:dict:remove")
     @DeleteMapping("/{dictDataIds}")
-    public CommonResult<Integer> remove(@PathVariable List<Long> dictDataIds) {
-        // 只能批量删除同一字典类型下的数据，这边随机去一个，为了获取字典type，为了接下来更删除数据时，可以缓存失效
-        Long randomDictDataId = dictDataIds.get(0);
-        SysDictDataDO existDictDataDO = dictDataService.getById(randomDictDataId);
-
-        return CommonResult.success(dictDataService.deleteDictDataByIds(dictDataIds, existDictDataDO.getDictType()));
+    public CommonResult<Void> remove(@PathVariable List<Long> dictDataIds) {
+        dictDataService.deleteDictDataByIds(dictDataIds);
+        return CommonResult.success();
     }
 
     /**

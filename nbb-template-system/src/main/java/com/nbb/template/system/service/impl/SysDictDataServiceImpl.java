@@ -1,6 +1,7 @@
 package com.nbb.template.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nbb.template.system.core.constant.CoreCacheConstants;
@@ -12,9 +13,13 @@ import com.nbb.template.system.domain.entity.SysDictDataDO;
 import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysDictDataMapper;
 import com.nbb.template.system.service.SysDictDataService;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -25,6 +30,12 @@ import static com.nbb.template.system.constant.SystemDictConstants.STATUS_ENABLE
  */
 @Service
 public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDictDataDO> implements SysDictDataService {
+    private final DataSourceTransactionManager transactionManager;
+
+    public SysDictDataServiceImpl(DataSourceTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
     @Override
     public PageResult<SysDictDataDO> listPage(DictDataPageDTO dto) {
         LambdaQueryWrapper<SysDictDataDO> queryWrapper = new LambdaQueryWrapperX<SysDictDataDO>()
@@ -36,24 +47,26 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    @CacheEvict(cacheNames = CoreCacheConstants.SYS_DICT_KEY, key = "#addDTO.dictType")
-    public int addDictData(DictDataAddDTO addDTO) {
+    public void addDictData(DictDataAddDTO addDTO) {
         SysDictDataDO sysDictDataDO = BeanUtil.copyProperties(addDTO, SysDictDataDO.class);
+        this.getBaseMapper().insert(sysDictDataDO);
 
-        return this.getBaseMapper().insert(sysDictDataDO);
+        this.cacheEvictDictDataById(sysDictDataDO.getId());
     }
 
     @Override
-    @CacheEvict(cacheNames = CoreCacheConstants.SYS_DICT_KEY, key = "#updateDTO.dictType")
-    public int updateDictData(DictDataUpdateDTO updateDTO) {
+    public void updateDictData(DictDataUpdateDTO updateDTO) {
         SysDictDataDO sysDictDataDO = BeanUtil.copyProperties(updateDTO, SysDictDataDO.class);
-        return this.getBaseMapper().updateEdit(sysDictDataDO);
+        this.getBaseMapper().updateEdit(sysDictDataDO);
+
+        this.cacheEvictDictDataById(sysDictDataDO.getId());
     }
 
     @Override
-    @CacheEvict(cacheNames = CoreCacheConstants.SYS_DICT_KEY, key = "#dictType")
-    public int deleteDictDataByIds(List<Long> ids, String dictType) {
-        return getBaseMapper().deleteByIds(ids);
+    public void deleteDictDataByIds(List<Long> ids) {
+        this.cacheEvictDictDataById(ids.get(0));
+
+        getBaseMapper().deleteByIds(ids);
     }
 
     @Override
@@ -66,4 +79,33 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
         return getBaseMapper().selectList(queryWrapper);
     }
+
+    @Override
+    @CacheEvict(cacheNames = CoreCacheConstants.SYS_DICT_KEY, key = "#dictType")
+    public void cacheEvitDictDataByDicType(String dictType) {
+
+    }
+
+    private void cacheEvictDictDataById(Long id) {
+        SysDictDataDO sysDictDataDO = getById(id);
+        if (ObjectUtil.isNull(sysDictDataDO)) {
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                ((SysDictDataService)AopContext.currentProxy()).cacheEvitDictDataByDicType(sysDictDataDO.getDictType());
+            }
+        });
+    }
+
+//    private void processAfterCommit(Runnable runnable) {
+//        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+//            @Override
+//            public void afterCommit() {
+//                runnable.run();
+//            }
+//        });
+//    }
 }
