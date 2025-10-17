@@ -8,4 +8,5 @@ import com.nbb.template.system.domain.entity.SysDictDataDO;
  */
 public interface SysDictDataService extends IService<SysDictDataDO> {
 
+
 }

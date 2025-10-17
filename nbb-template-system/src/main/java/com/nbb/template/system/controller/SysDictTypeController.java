@@ -1,17 +1,20 @@
 package com.nbb.template.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.nbb.template.system.core.domain.CommonResult;
 import com.nbb.template.system.core.domain.PageResult;
 import com.nbb.template.system.domain.dto.DictTypeAddDTO;
 import com.nbb.template.system.domain.dto.DictTypePageDTO;
 import com.nbb.template.system.domain.dto.DictTypeUpdateDTO;
 import com.nbb.template.system.domain.entity.SysDictTypeDO;
+import com.nbb.template.system.domain.vo.SysDictTypeSimpleVO;
 import com.nbb.template.system.service.SysDictTypeService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author 胡鹏
@@ -55,6 +58,22 @@ public class SysDictTypeController {
     @PutMapping
     public CommonResult<Integer> edit(@Validated @RequestBody DictTypeUpdateDTO updateDTO) {
         return CommonResult.success(dictTypeService.updateDictType(updateDTO));
+    }
+
+    /**
+     * 删除字典类型
+     */
+    @SaCheckPermission("system:dict:remove")
+    @DeleteMapping("/{ids}")
+    public CommonResult<Integer> remove(@PathVariable List<Long> ids) {
+        return CommonResult.success(dictTypeService.deleteDictTypeByIds(ids));
+    }
+
+    @GetMapping(value = "/list-all-simple")
+    public CommonResult<List<SysDictTypeSimpleVO>> getSimpleDictTypeList() {
+        List<SysDictTypeDO> dictTypeDoList = dictTypeService.listDictType();
+        List<SysDictTypeSimpleVO> dictTypeVoList = BeanUtil.copyToList(dictTypeDoList, SysDictTypeSimpleVO.class);
+        return CommonResult.success(dictTypeVoList);
     }
 
 

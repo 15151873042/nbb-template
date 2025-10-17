@@ -15,8 +15,20 @@ import java.util.List;
  */
 public interface SysDictTypeService extends IService<SysDictTypeDO> {
 
+    /**
+     * 分页查询字典类型列表
+     *
+     * @param queryDTO 查询参数
+     * @return 字典类型列表
+     */
     PageResult<SysDictTypeDO> listPageDictType(DictTypePageDTO queryDTO);
 
+    /**
+     * 根据字典类型查询信息
+     *
+     * @param dictType 字典类型
+     * @return 字典类型列表
+     */
     List<SysDictDataDO> selectDictDataByType(String dictType);
 
     /**
@@ -52,4 +64,18 @@ public interface SysDictTypeService extends IService<SysDictTypeDO> {
      * @return 结果
      */
     int updateDictType(DictTypeUpdateDTO updateDTO);
+
+    /**
+     * 批量删除字典信息
+     *
+     * @param ids 需要删除的字典ID
+     */
+    int deleteDictTypeByIds(List<Long> ids);
+
+    /**
+     * 获得全部字典类型列表
+     *
+     * @return 字典类型列表
+     */
+    List<SysDictTypeDO> listDictType();
 }

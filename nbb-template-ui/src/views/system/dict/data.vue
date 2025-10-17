@@ -234,8 +234,8 @@ function getTypes(dictId) {
 
 /** 查询字典类型列表 */
 function getTypeList() {
-  getDictOptionselect().then(response => {
-    typeOptions.value = response.data
+  getDictOptionselect().then(respData => {
+    typeOptions.value = respData
   })
 }
 

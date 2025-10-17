@@ -3,8 +3,8 @@ package com.nbb.template.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.lock.annotation.Lock4j;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.nbb.template.system.constant.ErrorCodeConstants;
 import com.nbb.template.system.core.constant.CoreCacheConstants;
 import com.nbb.template.system.core.domain.PageResult;
 import com.nbb.template.system.core.utils.ServiceExceptionUtil;
@@ -21,6 +21,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 
 import static com.nbb.template.system.constant.SystemDictConstants.STATUS_ENABLE;
@@ -94,6 +96,26 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
         // 修改
         SysDictTypeDO sysDictTypeDO = BeanUtil.copyProperties(updateDTO, SysDictTypeDO.class);
         return this.getBaseMapper().updateEdit(sysDictTypeDO);
+    }
+
+    @Override
+    public int deleteDictTypeByIds(List<Long> ids) {
+        // 1. 校验是否有字典数据
+        List<SysDictTypeDO> dictTypeDOList = getBaseMapper().selectByIds(ids);
+        dictTypeDOList.forEach(dictTypeDO -> {
+            long dictDataCount = dictDataMapper.countByDictType(dictTypeDO.getDictType());
+            if (dictDataCount > 0) {
+                throw ServiceExceptionUtil.exception(ErrorCodeConstants.DICT_TYPE_HAS_CHILDREN, dictTypeDO.getDictName());
+            }
+        });
+
+        // 2. 批量删除字典类型
+        return getBaseMapper().deleteByIds(ids);
+    }
+
+    @Override
+    public List<SysDictTypeDO> listDictType() {
+        return super.list();
     }
 
 
