@@ -1,6 +1,9 @@
 package com.nbb.template.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nbb.template.system.domain.dto.MenuAddDTO;
+import com.nbb.template.system.domain.dto.MenuListDTO;
+import com.nbb.template.system.domain.dto.MenuUpdateDTO;
 import com.nbb.template.system.domain.entity.SysMenuDO;
 import com.nbb.template.system.domain.vo.MenuTreeVO;
 import com.nbb.template.system.domain.vo.RouterVO;
@@ -12,6 +15,29 @@ import java.util.Set;
  * @author 胡鹏
  */
 public interface SysMenuService extends IService<SysMenuDO> {
+
+    /**
+     * 根据用户查询系统菜单列表
+     *
+     * @return 菜单列表
+     */
+    List<SysMenuDO> listMenu(MenuListDTO queryDTO);
+
+    /**
+     * 新增保存菜单信息
+     *
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    void addMenu(MenuAddDTO menu);
+
+    /**
+     * 校验菜单名称是否唯一
+     * @param menuName 菜单名称
+     * @param excludeMenuId 需要排除的菜单id
+     * @return
+     */
+    boolean isMenuNameUnique(String menuName, Long... excludeMenuId);
 
 
     /**
@@ -43,4 +69,8 @@ public interface SysMenuService extends IService<SysMenuDO> {
      * @return 路由列表
      */
     List<RouterVO> buildMenus(List<MenuTreeVO> menus);
+
+    void deleteById(Long id);
+
+    void updateMenu(MenuUpdateDTO menu);
 }

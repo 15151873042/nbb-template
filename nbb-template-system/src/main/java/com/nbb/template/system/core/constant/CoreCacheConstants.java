@@ -13,11 +13,15 @@ public class CoreCacheConstants {
     /**
      * 角色所拥有的菜单 redis key
      */
-    public static final String ROLE_MENU_KEY = "role_menu";
+    public static final String ROLE_MENU_KEY = "menu_ids";
+    /**
+     * 角色所拥有的菜单 redis key
+     */
+    public static final String MENUS_KEY = "menus";
     /**
      * 用户所拥有的角色 redis key
      */
-    public static final String USER_ROLE_KEY = "user_role";
+    public static final String USER_ROLE_KEY = "role_ids";
 
 
     /**

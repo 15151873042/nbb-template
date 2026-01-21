@@ -1,5 +1,6 @@
 package com.nbb.template.system.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -7,26 +8,29 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nbb.template.system.constant.SystemDictConstants;
 import com.nbb.template.system.core.constant.CoreCacheConstants;
+import com.nbb.template.system.core.exception.ServiceException;
 import com.nbb.template.system.core.utils.SecurityUtils;
 import com.nbb.template.system.core.utils.StrUtil;
+import com.nbb.template.system.domain.dto.MenuAddDTO;
+import com.nbb.template.system.domain.dto.MenuListDTO;
+import com.nbb.template.system.domain.dto.MenuUpdateDTO;
 import com.nbb.template.system.domain.entity.SysMenuDO;
 import com.nbb.template.system.domain.entity.SysRoleMenuDO;
 import com.nbb.template.system.domain.vo.MenuTreeVO;
 import com.nbb.template.system.domain.vo.MetaVO;
 import com.nbb.template.system.domain.vo.RouterVO;
+import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysMenuMapper;
 import com.nbb.template.system.mapper.SysRoleMenuMapper;
 import com.nbb.template.system.service.SysMenuService;
+import com.nbb.template.system.service.SysRoleService;
 import com.nbb.template.system.service.SysUserService;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,10 +42,71 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
 
 
     @Resource
+    private SysMenuMapper sysMenuMapper;
+    @Resource
     private SysRoleMenuMapper sysRoleMenuMapper;
-
     @Resource
     private SysUserService sysUserService;
+    @Resource
+    private SysRoleService sysRoleService;
+
+    @Override
+    public List<SysMenuDO> listMenu(MenuListDTO queryDTO) {
+        long loginUserId = StpUtil.getLoginIdAsLong();
+
+        List<SysMenuDO> menuList = Collections.emptyList();
+        if (SecurityUtils.isAdmin(loginUserId)) {
+            menuList = sysMenuMapper.listMenu(queryDTO);
+        } else {
+            // 1、查询用户所关连的角色id
+            Set<Long> roleIds = sysUserService.listRoleIdById(loginUserId);
+            // 2、查询角色所关连的菜单id
+            Set<Long> menuIds = sysRoleService.listMenuIdByIds(roleIds);
+            if (CollUtil.isNotEmpty(menuIds)) {
+                // 3、查询菜单详情
+                menuList = sysMenuMapper.listMenuByIds(queryDTO, menuIds);
+            }
+        }
+        return menuList;
+    }
+
+    @Override
+    public void addMenu(MenuAddDTO dto) {
+        this.checkMenuPath(dto);
+        this.checkMenuNameUnique(dto.getMenuName());
+
+        SysMenuDO menuDO = BeanUtil.copyProperties(dto, SysMenuDO.class);
+        sysMenuMapper.insert(menuDO);
+    }
+
+    void checkMenuPath(MenuAddDTO menu) {
+        if (SystemDictConstants.YES_FRAME.equals(menu.getIsFrame()) && !StrUtil.ishttp(menu.getPath())) {
+            throw new ServiceException("菜单类型为外链时，地址必须以http(s)://开头");
+        }
+    }
+
+    void checkMenuNameUnique(String menuName, Long... excludeMenuId) {
+        boolean unique = this.isMenuNameUnique(menuName, excludeMenuId);
+        if (!unique) {
+            throw new ServiceException("菜单'" + menuName + "'已存在");
+        }
+    }
+
+    void checkOnUpdate(Long menuId, Long parentMenuId) {
+        if (menuId.equals(parentMenuId)) {
+            throw new ServiceException("上级菜单不能选择自己");
+        }
+    }
+
+    @Override
+    public boolean isMenuNameUnique(String menuName, Long... excludeMenuId) {
+        LambdaQueryWrapperX<SysMenuDO> queryWrapper = new LambdaQueryWrapperX<SysMenuDO>()
+                .eq(SysMenuDO::getMenuName, menuName)
+                .notInIfPresent(SysMenuDO::getId, excludeMenuId);
+
+        return !sysMenuMapper.exists(queryWrapper);
+    }
+
 
     @Override
     @Cacheable(cacheNames = CoreCacheConstants.ROLE_MENU_PERMS_KEY, key = "#roleId", unless = "#result == null")
@@ -60,7 +125,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     }
 
     @Override
-    @Cacheable(cacheNames = CoreCacheConstants.ROLE_MENU_KEY, key = "#roleId", unless = "#result == null")
+    @Cacheable(cacheNames = CoreCacheConstants.MENUS_KEY, key = "#roleId", unless = "#result == null")
     public List<SysMenuDO> listMenuByRoleId(Long roleId) {
         MPJLambdaWrapper<SysRoleMenuDO> wrapper = new MPJLambdaWrapper<SysRoleMenuDO>()
                 .innerJoin(SysMenuDO.class, SysMenuDO::getId, SysRoleMenuDO::getMenuId)
@@ -143,6 +208,44 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
             routers.add(router);
         }
         return routers;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        // 校验菜单是否含有子菜单
+        this.checkHasChildMenuById(id);
+        // 校验菜单是否已关联角色
+        this.checkHasRoleById(id);
+        // 删除菜单
+        sysMenuMapper.deleteById(id);
+    }
+
+    @Override
+    public void updateMenu(MenuUpdateDTO menu) {
+        this.checkOnUpdate(menu.getId(), menu.getParentId());
+        this.checkMenuPath(menu);
+        this.checkMenuNameUnique(menu.getMenuName());
+
+        SysMenuDO menuDO = BeanUtil.copyProperties(menu, SysMenuDO.class);
+        sysMenuMapper.updateById(menuDO);
+    }
+
+    void checkHasChildMenuById(Long id) {
+        LambdaQueryWrapperX<SysMenuDO> queryWrapper = new LambdaQueryWrapperX<SysMenuDO>()
+                .eq(SysMenuDO::getParentId, id);
+        boolean exists = sysMenuMapper.exists(queryWrapper);
+        if (exists) {
+            throw new ServiceException("存在子菜单,不允许删除");
+        }
+    }
+
+    void checkHasRoleById(Long id) {
+        LambdaQueryWrapperX<SysRoleMenuDO> queryWrapper = new LambdaQueryWrapperX<SysRoleMenuDO>()
+                .eq(SysRoleMenuDO::getMenuId, id);
+        boolean exists = sysRoleMenuMapper.exists(queryWrapper);
+        if (exists) {
+            throw new ServiceException("菜单已关联角色,不允许删除");
+        }
     }
 
     /**

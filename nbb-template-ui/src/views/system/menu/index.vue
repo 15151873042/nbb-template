@@ -37,7 +37,7 @@
             >新增</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
+            <el-button
                type="info"
                plain
                icon="Sort"
@@ -324,8 +324,8 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询菜单列表 */
 function getList() {
   loading.value = true
-  listMenu(queryParams.value).then(response => {
-    menuList.value = proxy.handleTree(response.data, "id")
+  listMenu(queryParams.value).then(data => {
+    menuList.value = proxy.handleTree(data, "id")
     loading.value = false
   })
 }
@@ -333,9 +333,9 @@ function getList() {
 /** 查询菜单下拉树结构 */
 function getTreeselect() {
   menuOptions.value = []
-  listMenu().then(response => {
+  listMenu().then(respData => {
     const menu = { id: 0, menuName: "主类目", children: [] }
-    menu.children = proxy.handleTree(response.data, "id")
+    menu.children = proxy.handleTree(respData, "id")
     menuOptions.value.push(menu)
   })
 }
@@ -410,8 +410,8 @@ function toggleExpandAll() {
 async function handleUpdate(row) {
   reset()
   await getTreeselect()
-  getMenu(row.id).then(response => {
-    form.value = response.data
+  getMenu(row.id).then(respData => {
+    form.value = respData
     open.value = true
     title.value = "修改菜单"
   })

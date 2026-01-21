@@ -4,6 +4,8 @@ spring:
     redis:
       time-to-live: 1h # 设置过期时间为 1 小时
       key-prefix: 'spring_cache:'
+  main:
+    allow-circular-references: true
 
 system:
   # 验证码类型 math 数字计算 char 字符验证

@@ -1,9 +1,16 @@
 package com.nbb.template.system.core.utils;
 
+import cn.dev33.satoken.stp.StpUtil;
+
 /**
  * @author 胡鹏
  */
 public class SecurityUtils {
+
+    public static boolean isCurrentUserAdmin() {
+        long loginUserId = StpUtil.getLoginIdAsLong();
+        return isAdmin(loginUserId);
+    }
 
     /**
      * 是否为管理员
