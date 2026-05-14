@@ -16,6 +16,6 @@ public class CaptchaImageVO {
     /** 验证码图片（base64） */
     private String img;
 
-    /** 该验证码的唯一标识（用户登陆时校验使用） */
+    /** 后端缓存验证码的 Key */
     private String uuid;
 }

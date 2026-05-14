@@ -7,6 +7,7 @@ import com.nbb.template.system.domain.dto.LoginDTO;
 import com.nbb.template.system.domain.entity.SysUserDO;
 import com.nbb.template.system.domain.vo.LoginVO;
 import com.nbb.template.system.service.LoginService;
+import com.nbb.template.system.service.SysCaptchaService;
 import com.nbb.template.system.service.SysUserService;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +22,13 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     SysUserService sysUserService;
 
+    @Resource
+    SysCaptchaService sysCaptchaService;
+
     @Override
     public LoginVO login(LoginDTO dto) {
+        // 校验验证码
+        sysCaptchaService.verifyCode(dto.getCode(), dto.getUuid());
         // 通过账号获取用户信息
         SysUserDO sysUserDO = sysUserService.selectUserByUserName(dto.getUsername());
         // 校验密码
