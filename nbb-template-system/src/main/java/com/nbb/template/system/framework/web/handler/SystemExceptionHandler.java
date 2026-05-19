@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static com.nbb.template.system.core.enums.CoreErrorCodeConstants.INTERNAL_SERVER_ERROR;
+
 /**
  * @author 胡鹏
  */
@@ -21,5 +23,12 @@ public class SystemExceptionHandler {
     @ExceptionHandler(value = ServiceException.class)
     public CommonResult<?> serviceExceptionHandler(ServiceException ex) {
         return CommonResult.error(ex.getCode(), ex.getMsg());
+    }
+
+
+    @ExceptionHandler(value = Exception.class)
+    public CommonResult<?> exceptionHandler(Exception ex) {
+        log.error(ex.getMessage(), ex);
+        return CommonResult.error(INTERNAL_SERVER_ERROR.getCode(), ex.getMessage());
     }
 }
