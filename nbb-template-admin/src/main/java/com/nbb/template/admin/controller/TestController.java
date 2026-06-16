@@ -12,16 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    @RequestMapping("/test")
-    public CommonResult<TestPageDTO> test(TestPageDTO dto) {
+    @RequestMapping("/form-urlencoded-input-param")
+    public CommonResult<TestPageDTO> formUrlencodedInputParam(TestPageDTO dto) {
         return CommonResult.success(dto);
     }
 
 
-    @RequestMapping("/test2")
-    public CommonResult<TestPageDTO> test2(@RequestBody TestPageDTO dto) {
+    @RequestMapping("/json-input-param")
+    public CommonResult<TestPageDTO> jsonInputParam(@RequestBody TestPageDTO dto) {
         return CommonResult.success(dto);
     }
+
+
 
     public static void main(String[] args) {
         String snowflakeNextIdStr = IdUtil.getSnowflakeNextIdStr();

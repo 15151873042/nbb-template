@@ -6,8 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.nbb.template.system.framework.jackson.BigDecimalSerializer;
-import com.nbb.template.system.framework.jackson.NumberSerializer;
+import com.nbb.template.system.framework.jackson.serializer.BigDecimalSerializer;
+import com.nbb.template.system.framework.jackson.serializer.NumberSerializer;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +43,7 @@ public class JacksonConfig {
             // Long类型转换成String，已避免（将超过16位的long，前端精度丢失）
             jacksonObjectMapperBuilder.serializerByType(Long.class, NumberSerializer.INSTANCE);
             jacksonObjectMapperBuilder.serializerByType(Long.TYPE, NumberSerializer.INSTANCE);
+            // BigDecimal转String
             jacksonObjectMapperBuilder.serializerByType(BigDecimal.class, BigDecimalSerializer.INSTANCE);
         };
     }

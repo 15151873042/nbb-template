@@ -22,12 +22,6 @@
             <groupId>com.nbb.template</groupId>
             <artifactId>nbb-template-system</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.nbb.template</groupId>
-            <artifactId>nbb-template-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-
     </dependencies>
 
     <build>
