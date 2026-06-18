@@ -44,6 +44,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
     }
 
     @Override
+    @Cacheable(cacheNames = CoreCacheConstants.USER_ROLE_KEY_KEY, key = "#id", unless = "#result == null")
     public Set<String> listRoleKeyById(Long id) {
         MPJLambdaWrapper<SysUserRoleDO> wrapper = new MPJLambdaWrapper<SysUserRoleDO>()
                 .innerJoin(SysRoleDO.class, SysRoleDO::getId, SysUserRoleDO::getRoleId)
@@ -56,7 +57,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
     }
 
     @Override
-    @Cacheable(cacheNames = CoreCacheConstants.USER_ROLE_KEY, key = "#id", unless = "#result == null")
+    @Cacheable(cacheNames = CoreCacheConstants.USER_ROLE_ID_KEY, key = "#id", unless = "#result == null")
     public Set<Long> listRoleIdById(Long id) {
         MPJLambdaWrapper<SysUserRoleDO> wrapper = new MPJLambdaWrapper<SysUserRoleDO>()
                 .innerJoin(SysRoleDO.class, SysRoleDO::getId, SysUserRoleDO::getRoleId)

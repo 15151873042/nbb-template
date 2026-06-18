@@ -38,7 +38,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
     SysRoleService sysRoleService;
 
     @Override
-    @Cacheable(cacheNames = CoreCacheConstants.ROLE_MENU_KEY, key = "#id", unless = "#result == null")
+    @Cacheable(cacheNames = CoreCacheConstants.ROLE_MENU_ID_KEY, key = "#id", unless = "#result == null")
     public Set<Long> listMenuIdById(Long id) {
         LambdaQueryWrapper<SysRoleMenuDO> queryWrapper = new LambdaQueryWrapper<SysRoleMenuDO>()
                 .eq(SysRoleMenuDO::getRoleId, id);
