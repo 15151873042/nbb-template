@@ -11,6 +11,7 @@ import com.nbb.template.system.core.constant.CoreCacheConstants;
 import com.nbb.template.system.core.exception.ServiceException;
 import com.nbb.template.system.core.utils.SecurityUtils;
 import com.nbb.template.system.core.utils.StrUtil;
+import com.nbb.template.system.domain.bo.TreeSelectBO;
 import com.nbb.template.system.domain.dto.MenuAddDTO;
 import com.nbb.template.system.domain.dto.MenuListDTO;
 import com.nbb.template.system.domain.dto.MenuUpdateDTO;
@@ -209,6 +210,39 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
         }
         return routers;
     }
+
+    @Override
+    public List<TreeSelectBO> buildMenuTreeSelect(List<SysMenuDO> menus) {
+        List<MenuTreeVO> menuVOList = BeanUtil.copyToList(menus, MenuTreeVO.class);
+
+        List<MenuTreeVO> menuTrees = buildMenuTree(menuVOList);
+        return menuTrees.stream().map(this::toTreeSelect).collect(Collectors.toList());
+    }
+
+    private TreeSelectBO toTreeSelect(MenuTreeVO menuTree) {
+        TreeSelectBO treeSelect = new TreeSelectBO();
+        treeSelect.setId(menuTree.getId());
+        treeSelect.setLabel(menuTree.getMenuName());
+        List<TreeSelectBO> children = menuTree.getChildren().stream().map(this::toTreeSelect).collect(Collectors.toList());
+        treeSelect.setChildren(children);
+        return treeSelect;
+    }
+
+    private List<MenuTreeVO> buildMenuTree(List<MenuTreeVO> menus) {
+        List<MenuTreeVO> returnList = new ArrayList<>();
+        List<Long> tempList = menus.stream().map(MenuTreeVO::getId).collect(Collectors.toList());
+
+        for (MenuTreeVO menu : menus) {
+            // 如果是顶级节点, 遍历该父节点的所有子节点
+            if (!tempList.contains(menu.getParentId())) {
+                recursionFn(menus, menu);
+                returnList.add(menu);
+            }
+        }
+        return returnList;
+    }
+
+
 
     @Override
     public void deleteById(Long id) {

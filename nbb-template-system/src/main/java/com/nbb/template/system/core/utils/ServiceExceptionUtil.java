@@ -6,8 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.text.MessageFormat;
 
-import static com.nbb.template.system.core.enums.CoreErrorCodeConstants.DATA_EXIST;
-import static com.nbb.template.system.core.enums.CoreErrorCodeConstants.INTERNAL_SERVER_ERROR;
+import static com.nbb.template.system.core.enums.CoreErrorCodeConstants.*;
 
 /**
  *
@@ -17,6 +16,15 @@ public class ServiceExceptionUtil {
 
     public static ServiceException dataExistException() {
         return new ServiceException(DATA_EXIST);
+    }
+    public static ServiceException dataExistException(String msg) {
+        return new ServiceException(DATA_EXIST.getCode(), msg);
+    }
+    public static ServiceException linkedDataException() {
+        return new ServiceException(LINKED_DATA);
+    }
+    public static ServiceException linkedDataException(String msg) {
+        return new ServiceException(LINKED_DATA.getCode(), msg);
     }
 
     public static ServiceException exception(String message) {

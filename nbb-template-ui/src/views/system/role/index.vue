@@ -304,17 +304,16 @@ function getList() {
   const [beginTime, endTime] = Array.isArray(dateRange.value) ? dateRange.value : []
   const params = {...queryParams.value, beginTime, endTime};
 
-  listRole(params).then(response => {
-    const {data} = response
-    roleList.value = data.list
-    total.value = data.total
+  listRole(params).then(respData => {
+    roleList.value = respData.list
+    total.value = respData.total
     loading.value = false
   })
 }
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.value.pageNum = 1
+  queryParams.value.pageNo = 1
   getList()
 }
 
@@ -383,8 +382,8 @@ function handleAuthUser(row) {
 
 /** 查询菜单树结构 */
 function getMenuTreeselect() {
-  menuTreeselect().then(response => {
-    menuOptions.value = response.data
+  menuTreeselect().then(apiData => {
+    menuOptions.value = apiData
   })
 }
 
@@ -435,8 +434,8 @@ function handleUpdate(row) {
   reset()
   const id = row.id || ids.value
   const roleMenu = getRoleMenuTreeselect(id)
-  getRole(id).then(response => {
-    form.value = response.data
+  getRole(id).then(apiData => {
+    form.value = apiData
     form.value.roleSort = Number(form.value.roleSort)
     open.value = true
     nextTick(() => {
@@ -455,9 +454,9 @@ function handleUpdate(row) {
 
 /** 根据角色ID查询菜单树结构 */
 function getRoleMenuTreeselect(roleId) {
-  return roleMenuTreeselect(roleId).then(response => {
-    menuOptions.value = response.menus
-    return response
+  return roleMenuTreeselect(roleId).then(apiData => {
+    menuOptions.value = apiData.menus
+    return apiData
   })
 }
 

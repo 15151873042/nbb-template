@@ -41,7 +41,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
         Set<Long> roleIds = sysUserService.listRoleIdById(userId);
 
-        return roleIds.parallelStream()
+        return roleIds.stream()
                 .flatMap(roleId -> sysMenuService.listPermsByRoleId(roleId).stream())
                 .collect(Collectors.toSet());
     }

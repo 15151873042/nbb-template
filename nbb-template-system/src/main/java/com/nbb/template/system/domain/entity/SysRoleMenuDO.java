@@ -1,9 +1,7 @@
 package com.nbb.template.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * 角色和菜单关联 sys_role_menu
@@ -14,6 +12,8 @@ import lombok.ToString;
 @TableName("sys_role_menu")
 @EqualsAndHashCode
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class SysRoleMenuDO {
     /** 角色ID */
     private Long roleId;

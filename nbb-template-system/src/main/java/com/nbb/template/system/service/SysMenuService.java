@@ -1,6 +1,7 @@
 package com.nbb.template.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nbb.template.system.domain.bo.TreeSelectBO;
 import com.nbb.template.system.domain.dto.MenuAddDTO;
 import com.nbb.template.system.domain.dto.MenuListDTO;
 import com.nbb.template.system.domain.dto.MenuUpdateDTO;
@@ -69,6 +70,14 @@ public interface SysMenuService extends IService<SysMenuDO> {
      * @return 路由列表
      */
     List<RouterVO> buildMenus(List<MenuTreeVO> menus);
+
+    /**
+     * 构建前端所需要下拉树结构
+     *
+     * @param menus 菜单列表
+     * @return 下拉树结构列表
+     */
+    List<TreeSelectBO> buildMenuTreeSelect(List<SysMenuDO> menus);
 
     void deleteById(Long id);
 

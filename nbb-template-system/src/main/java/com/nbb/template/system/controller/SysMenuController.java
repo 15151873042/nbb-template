@@ -1,19 +1,25 @@
 package com.nbb.template.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.nbb.template.system.constant.SystemDictConstants;
 import com.nbb.template.system.core.domain.CommonResult;
 import com.nbb.template.system.core.utils.StrUtil;
+import com.nbb.template.system.domain.bo.TreeSelectBO;
 import com.nbb.template.system.domain.dto.MenuAddDTO;
 import com.nbb.template.system.domain.dto.MenuListDTO;
 import com.nbb.template.system.domain.dto.MenuUpdateDTO;
 import com.nbb.template.system.domain.entity.SysMenuDO;
+import com.nbb.template.system.domain.vo.RoleMenuTreeSelectVO;
 import com.nbb.template.system.service.SysMenuService;
+import com.nbb.template.system.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜单信息
@@ -25,6 +31,8 @@ import java.util.List;
 public class SysMenuController {
     @Autowired
     private SysMenuService menuService;
+    @Autowired
+    private SysRoleService roleService;
 
     /**
      * 获取菜单列表
@@ -59,28 +67,31 @@ public class SysMenuController {
         SysMenuDO menu = menuService.getById(menuId);
         return CommonResult.success(menu);
     }
-//
-//    /**
-//     * 获取菜单下拉树列表
-//     */
-//    @GetMapping("/treeselect")
-//    public AjaxResult treeselect(SysMenu menu) {
-//        List<SysMenu> menus = menuService.selectMenuList(menu, getUserId());
-//        return success(menuService.buildMenuTreeSelect(menus));
-//    }
-//
-//    /**
-//     * 加载对应角色菜单列表树
-//     */
-//    @GetMapping(value = "/roleMenuTreeselect/{roleId}")
-//    public AjaxResult roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
-//        List<SysMenu> menus = menuService.selectMenuList(getUserId());
-//        AjaxResult ajax = AjaxResult.success();
-//        ajax.put("checkedKeys", menuService.selectMenuListByRoleId(roleId));
-//        ajax.put("menus", menuService.buildMenuTreeSelect(menus));
-//        return ajax;
-//    }
-//
+
+    /**
+     * 获取菜单下拉树列表
+     */
+    @GetMapping("/treeselect")
+    public CommonResult<List<TreeSelectBO>> treeselect() {
+        List<SysMenuDO> menus = menuService.listMenu(new MenuListDTO());
+        return CommonResult.success(menuService.buildMenuTreeSelect(menus));
+    }
+
+    /**
+     * 加载对应角色菜单列表树
+     */
+    @GetMapping(value = "/roleMenuTreeselect/{roleId}")
+    public CommonResult<RoleMenuTreeSelectVO> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
+        List<SysMenuDO> menus = menuService.listMenu(new MenuListDTO());
+        List<TreeSelectBO> treeSelect = menuService.buildMenuTreeSelect(menus);
+        Set<Long> menuIds = roleService.listMenuIdById(roleId);
+
+        RoleMenuTreeSelectVO vo = new RoleMenuTreeSelectVO();
+        vo.setMenus(treeSelect);
+        vo.setCheckedKeys(ListUtil.toList(menuIds));
+        return CommonResult.success(vo);
+    }
+
 
 
     /**
