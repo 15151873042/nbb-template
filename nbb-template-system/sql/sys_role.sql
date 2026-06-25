@@ -10,6 +10,7 @@ create table sys_role
     dept_check_strictly tinyint(1) default 1   null comment '部门树选择项是否关联显示',
     status              char                   not null comment '角色状态（0正常 1停用）',
     del_flag            char       default '0' null comment '删除标志（0代表存在 2代表删除）',
+    deleted             bigint     default 0   not null comment '是否删除（0：未删除；非0：已删除）',
     remark              varchar(500)           null comment '备注',
     create_id           bigint                 null comment '创建者',
     create_time         datetime               null comment '创建时间',
@@ -18,5 +19,5 @@ create table sys_role
 )
     comment '角色信息表';
 
-INSERT INTO `nbb-template-system`.sys_role (id, role_name, role_key, role_sort, data_scope, menu_check_strictly, dept_check_strictly, status, del_flag, remark, create_id, create_time, update_id, update_time) VALUES (1, '超级管理员', 'admin', 1, '1', 1, 1, '0', '0', '超级管理员', null, '2025-09-26 10:24:57', null, null);
-INSERT INTO `nbb-template-system`.sys_role (id, role_name, role_key, role_sort, data_scope, menu_check_strictly, dept_check_strictly, status, del_flag, remark, create_id, create_time, update_id, update_time) VALUES (2, '普通角色', 'common', 2, '2', 1, 1, '0', '0', '普通角色', null, '2025-09-26 10:24:57', null, null);
+INSERT INTO `nbb-template-system`.sys_role (id, role_name, role_key, role_sort, data_scope, menu_check_strictly, dept_check_strictly, status, del_flag, deleted, remark, create_id, create_time, update_id, update_time) VALUES (1, '超级管理员', 'admin', 1, '1', 1, 1, '0', '0', 0, '超级管理员', null, '2025-09-26 10:24:57', null, null);
+INSERT INTO `nbb-template-system`.sys_role (id, role_name, role_key, role_sort, data_scope, menu_check_strictly, dept_check_strictly, status, del_flag, deleted, remark, create_id, create_time, update_id, update_time) VALUES (2, '普通角色', 'common', 2, '2', 1, 1, '0', '0', 0, '普通角色', null, '2025-09-26 10:24:57', null, null);
