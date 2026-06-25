@@ -7,7 +7,7 @@ import com.nbb.template.system.core.constant.CoreCacheConstants;
 import com.nbb.template.system.domain.entity.SysRoleDO;
 import com.nbb.template.system.domain.entity.SysUserDO;
 import com.nbb.template.system.domain.entity.SysUserRoleDO;
-import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysUserMapper;
 import com.nbb.template.system.mapper.SysUserRoleMapper;
 import com.nbb.template.system.service.SysUserService;

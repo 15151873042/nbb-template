@@ -1,18 +1,13 @@
 package com.nbb.template.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.github.yulichang.wrapper.MPJLambdaWrapper;
-import com.nbb.template.system.core.utils.StrUtil;
 import com.nbb.template.system.domain.dto.MenuListDTO;
 import com.nbb.template.system.domain.entity.SysMenuDO;
-import com.nbb.template.system.domain.entity.SysRoleMenuDO;
-import com.nbb.template.system.framework.mybatis.BaseMapperX;
-import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
+import com.nbb.template.system.framework.mybatis.mapper.BaseMapperX;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author 胡鹏

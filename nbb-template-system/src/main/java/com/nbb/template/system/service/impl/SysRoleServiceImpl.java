@@ -15,7 +15,7 @@ import com.nbb.template.system.domain.dto.RolePageDTO;
 import com.nbb.template.system.domain.dto.RoleUpdateDTO;
 import com.nbb.template.system.domain.entity.SysRoleDO;
 import com.nbb.template.system.domain.entity.SysRoleMenuDO;
-import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysRoleMapper;
 import com.nbb.template.system.mapper.SysRoleMenuMapper;
 import com.nbb.template.system.mapper.SysUserRoleMapper;
@@ -149,7 +149,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
         // 删除角色与菜单关联
         sysRoleMenuMapper.deleteByRoleIds(roleIds);
         // 批量删除角色
-        getBaseMapper().deleteByRoleIds(roleIds);
+        getBaseMapper().deleteByIds(roleIds);
         // 清除角色所关联的缓存
         cacheEvictMenuInfoByRoleIds(roleIds);
     }

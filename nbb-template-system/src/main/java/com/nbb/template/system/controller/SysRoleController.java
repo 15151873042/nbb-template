@@ -26,8 +26,6 @@ public class SysRoleController {
     @Resource
     private SysRoleService sysRoleService;
 
-
-
     @SaCheckPermission("system:role:list")
     @GetMapping("/list")
     public CommonResult<PageResult<SysRoleDO>> listPage(RolePageDTO dto) {

@@ -1,4 +1,4 @@
-package com.nbb.template.system.framework.mybatis;
+package com.nbb.template.system.framework.mybatis.query;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;

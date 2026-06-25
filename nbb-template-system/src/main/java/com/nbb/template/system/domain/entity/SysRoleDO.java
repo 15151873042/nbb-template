@@ -1,7 +1,7 @@
 package com.nbb.template.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.nbb.template.system.core.domain.BaseDO;
+import com.nbb.template.system.core.domain.LogicBaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,7 +15,7 @@ import lombok.ToString;
 @TableName("sys_role")
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class SysRoleDO extends BaseDO {
+public class SysRoleDO extends LogicBaseDO {
 
     /** 角色名称 */
     private String roleName;

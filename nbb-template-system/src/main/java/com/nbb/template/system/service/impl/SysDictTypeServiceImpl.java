@@ -11,7 +11,7 @@ import com.nbb.template.system.domain.dto.DictTypeAddDTO;
 import com.nbb.template.system.domain.dto.DictTypePageDTO;
 import com.nbb.template.system.domain.dto.DictTypeUpdateDTO;
 import com.nbb.template.system.domain.entity.SysDictTypeDO;
-import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysDictDataMapper;
 import com.nbb.template.system.mapper.SysDictTypeMapper;
 import com.nbb.template.system.service.SysDictTypeService;

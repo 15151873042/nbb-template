@@ -20,7 +20,7 @@ import com.nbb.template.system.domain.entity.SysRoleMenuDO;
 import com.nbb.template.system.domain.vo.MenuTreeVO;
 import com.nbb.template.system.domain.vo.MetaVO;
 import com.nbb.template.system.domain.vo.RouterVO;
-import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysMenuMapper;
 import com.nbb.template.system.mapper.SysRoleMenuMapper;
 import com.nbb.template.system.service.SysMenuService;

@@ -1,4 +1,4 @@
-package com.nbb.template.system.framework.mybatis;
+package com.nbb.template.system.framework.mybatis.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

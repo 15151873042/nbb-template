@@ -2,8 +2,8 @@ package com.nbb.template.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.nbb.template.system.domain.entity.SysRoleMenuDO;
-import com.nbb.template.system.framework.mybatis.BaseMapperX;
-import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
+import com.nbb.template.system.framework.mybatis.mapper.BaseMapperX;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -2,9 +2,8 @@ package com.nbb.template.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.nbb.template.system.domain.entity.SysDictDataDO;
-import com.nbb.template.system.domain.entity.SysDictTypeDO;
-import com.nbb.template.system.framework.mybatis.BaseMapperX;
-import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
+import com.nbb.template.system.framework.mybatis.mapper.BaseMapperX;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 
 /**
  * @author 胡鹏

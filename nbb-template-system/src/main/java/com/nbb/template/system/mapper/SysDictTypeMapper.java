@@ -1,10 +1,8 @@
 package com.nbb.template.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.nbb.template.system.domain.dto.DictTypeUpdateDTO;
 import com.nbb.template.system.domain.entity.SysDictTypeDO;
-import com.nbb.template.system.framework.mybatis.BaseMapperX;
+import com.nbb.template.system.framework.mybatis.mapper.BaseMapperX;
 
 /**
  * @author 胡鹏

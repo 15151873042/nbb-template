@@ -10,7 +10,7 @@ import com.nbb.template.system.domain.dto.DictDataAddDTO;
 import com.nbb.template.system.domain.dto.DictDataPageDTO;
 import com.nbb.template.system.domain.dto.DictDataUpdateDTO;
 import com.nbb.template.system.domain.entity.SysDictDataDO;
-import com.nbb.template.system.framework.mybatis.LambdaQueryWrapperX;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysDictDataMapper;
 import com.nbb.template.system.service.SysDictDataService;
 import org.springframework.aop.framework.AopContext;
