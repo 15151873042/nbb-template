@@ -3,6 +3,7 @@ package com.nbb.template.system.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.nbb.template.system.domain.dto.MenuListDTO;
 import com.nbb.template.system.domain.entity.SysMenuDO;
+import com.nbb.template.system.domain.qo.MenuListQO;
 import com.nbb.template.system.framework.mybatis.mapper.BaseMapperX;
 import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 
@@ -14,6 +15,29 @@ import java.util.Set;
  */
 public interface SysMenuMapper extends BaseMapperX<SysMenuDO> {
 
+    /**
+     * 根据用户ID查询菜单
+     *
+     * @param userId 用户ID
+     * @return 菜单列表
+     */
+    List<SysMenuDO> listMenuTreeByUserId(Long userId);
+
+    /**
+     * 根据用户查询系统菜单列表
+     *
+     * @param qo 查询信息
+     * @return 菜单列表
+     */
+    List<SysMenuDO> listMenuByUserId(MenuListQO qo);
+
+    /**
+     * 根据用户ID查询权限
+     *
+     * @param userId 用户ID
+     * @return 权限列表
+     */
+    Set<String> listMenuPermsByUserId(Long userId);
 
     default List<SysMenuDO> listMenu(MenuListDTO queryDTO) {
         LambdaQueryWrapper<SysMenuDO> queryWrapper = new LambdaQueryWrapperX<SysMenuDO>()
@@ -23,26 +47,6 @@ public interface SysMenuMapper extends BaseMapperX<SysMenuDO> {
 
         return this.selectList(queryWrapper);
     }
-
-    default List<SysMenuDO> listMenuByIds(MenuListDTO queryDTO, Set<Long> menuIds) {
-        LambdaQueryWrapper<SysMenuDO> queryWrapper = new LambdaQueryWrapperX<SysMenuDO>()
-                .likeIfPresent(SysMenuDO::getMenuName, queryDTO.getMenuName())
-                .eqIfPresent(SysMenuDO::getStatus, queryDTO.getStatus())
-                .in(SysMenuDO::getId, menuIds)
-                .orderByAsc(SysMenuDO::getParentId, SysMenuDO::getOrderNum);
-
-        return this.selectList(queryWrapper);
-    }
-
-//    default List<SysMenuDO> listMenuByUserId(MenuListDTO queryDTO, long userId) {
-//        MPJLambdaWrapper<SysMenuDO> wrapper = new MPJLambdaWrapper<SysMenuDO>()
-//                .innerJoin(SysRoleMenuDO.class, SysRoleMenuDO::getMenuId, SysMenuDO::getId)
-//                .select(SysMenuDO::getId, SysMenuDO::getPerms)
-//                .eq(SysRoleMenuDO::getRoleId, roleId)
-//                .distinct();
-//
-//        List<SysMenuDO> menuList = this.selectJoinList(SysMenuDO.class, wrapper);
-//    }
 
     /**
      * 获取所有菜单（不包含按钮）
@@ -56,5 +60,6 @@ public interface SysMenuMapper extends BaseMapperX<SysMenuDO> {
 
         return this.selectList(queryWrapper);
     }
+
 
 }

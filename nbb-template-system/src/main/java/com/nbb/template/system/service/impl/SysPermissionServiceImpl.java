@@ -1,15 +1,16 @@
 package com.nbb.template.system.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.nbb.template.system.core.utils.SecurityUtils;
 import com.nbb.template.system.service.SysMenuService;
 import com.nbb.template.system.service.SysPermissionService;
-import com.nbb.template.system.service.SysUserService;
+import com.nbb.template.system.service.SysRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author 胡鹏
@@ -18,10 +19,10 @@ import java.util.stream.Collectors;
 public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Resource
-    private SysUserService sysUserService;
-
-    @Resource
     private SysMenuService sysMenuService;
+
+    @Autowired
+    private SysRoleService sysRoleService;
 
 
     @Override
@@ -30,7 +31,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
             return Collections.singleton("admin");
         }
 
-        return sysUserService.listRoleKeyById(userId);
+        return sysRoleService.listRolePermissionByUserId(userId);
     }
 
     @Override
@@ -39,11 +40,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
             return Collections.singleton("*:*:*");
         }
 
-        Set<Long> roleIds = sysUserService.listRoleIdById(userId);
-
-        return roleIds.stream()
-                .flatMap(roleId -> sysMenuService.listPermsByRoleId(roleId).stream())
-                .collect(Collectors.toSet());
+        return sysMenuService.listMenuPermsByUserId(StpUtil.getLoginIdAsLong());
     }
 
 }

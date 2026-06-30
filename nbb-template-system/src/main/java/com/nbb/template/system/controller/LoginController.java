@@ -10,8 +10,7 @@ import com.nbb.template.system.domain.vo.RouterVO;
 import com.nbb.template.system.domain.vo.UserPermissionInfoVO;
 import com.nbb.template.system.service.LoginService;
 import com.nbb.template.system.service.SysMenuService;
-import com.nbb.template.system.service.SysPermissionService;
-import com.nbb.template.system.service.SysUserService;
+import com.nbb.template.system.service.SysSessionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,11 +29,9 @@ public class LoginController {
     @Resource
     private LoginService loginService;
     @Resource
-    private SysUserService sysUserService;
-    @Resource
-    private SysPermissionService permissionService;
-    @Resource
     private SysMenuService menuService;
+    @Resource
+    private SysSessionService sessionService;
 
 
     @PostMapping("/login")
@@ -50,19 +47,21 @@ public class LoginController {
     }
 
     /**
-     * 获取用户信息
+     * 获取用户信息（前端强刷页面的时候都会调用该接口）
      *
      * @return 用户信息
      */
     @GetMapping("/getInfo")
     public CommonResult<UserPermissionInfoVO> getInfo() {
+        // 刷新用户session（将用户最新角色，权限标识放入session）
+        sessionService.refreshUserSession();
 
-        long loginUserId = StpUtil.getLoginIdAsLong();
-        SysUserDO userBasicInfo = sysUserService.getUserBasicInfo(loginUserId);
+        // 用户基本信息
+        SysUserDO userBasicInfo = sessionService.getUserInfo();
         // 角色集合
-        Set<String> roles = permissionService.listRolePermission(loginUserId);
-        // 角色集合
-        Set<String> permissions = permissionService.listMenuPermission(loginUserId);
+        Set<String> roles = sessionService.listRolePermission();
+        // 权限集合
+        Set<String> permissions = sessionService.listMenuPermission();
 
         UserPermissionInfoVO vo = UserPermissionInfoVO.builder()
                 .user(userBasicInfo)

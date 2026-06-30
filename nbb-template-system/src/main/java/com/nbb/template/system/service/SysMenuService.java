@@ -18,6 +18,22 @@ import java.util.Set;
 public interface SysMenuService extends IService<SysMenuDO> {
 
     /**
+     * 根据用户ID查询权限
+     *
+     * @param userId 用户ID
+     * @return 权限列表
+     */
+    Set<String> listMenuPermsByUserId(Long userId);
+
+    /**
+     * 根据角色ID查询所关联的菜单id
+     *
+     * @param roleId 角色ID
+     * @return 关联的菜单id
+     */
+    List<Long> listMenuIdByRoleId(Long roleId);
+
+    /**
      * 根据用户查询系统菜单列表
      *
      * @return 菜单列表
@@ -40,20 +56,6 @@ public interface SysMenuService extends IService<SysMenuDO> {
      */
     boolean isMenuNameUnique(String menuName, Long... excludeMenuId);
 
-
-    /**
-     *  获取角色所拥有菜单权限标识
-     * @param roleId 角色id
-     * @return
-     */
-    Set<String> listPermsByRoleId(Long roleId);
-
-    /**
-     *  获取所有角色的菜单
-     * @param roleId 角色id
-     * @return
-     */
-    List<SysMenuDO> listMenuByRoleId(Long roleId);
 
     /**
      * 根据用户ID查询菜单树信息

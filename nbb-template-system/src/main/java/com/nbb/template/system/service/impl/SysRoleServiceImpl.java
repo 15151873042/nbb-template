@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.lock.LockInfo;
 import com.baomidou.lock.LockTemplate;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nbb.template.system.core.constant.CoreCacheConstants;
 import com.nbb.template.system.core.domain.PageResult;
 import com.nbb.template.system.core.exception.ServiceException;
@@ -15,16 +16,14 @@ import com.nbb.template.system.domain.dto.RolePageDTO;
 import com.nbb.template.system.domain.dto.RoleUpdateDTO;
 import com.nbb.template.system.domain.entity.SysRoleDO;
 import com.nbb.template.system.domain.entity.SysRoleMenuDO;
+import com.nbb.template.system.domain.entity.SysUserRoleDO;
 import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysRoleMapper;
 import com.nbb.template.system.mapper.SysRoleMenuMapper;
 import com.nbb.template.system.mapper.SysUserRoleMapper;
 import com.nbb.template.system.service.SysRoleService;
-import org.springframework.aop.framework.AopContext;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -55,21 +54,23 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
 
     @Resource
     private LockTemplate lockTemplate;
+    @Resource
+    private SysRoleMapper sysRoleMapper;
 
     @Override
-    @Cacheable(cacheNames = CoreCacheConstants.ROLE_MENU_ID_KEY, key = "#id", unless = "#result == null")
-    public Set<Long> listMenuIdById(Long id) {
-        List<Long> menuIds = sysRoleMenuMapper.listMenuIdByRoleId(id);
+    public Set<String> listRolePermissionByUserId(Long userId) {
+        MPJLambdaWrapper<SysUserRoleDO> wrapper = new MPJLambdaWrapper<SysUserRoleDO>()
+                .innerJoin(SysRoleDO.class, SysRoleDO::getId, SysUserRoleDO::getRoleId)
+                .select(SysRoleDO::getRoleKey)
+                .eq(SysUserRoleDO::getUserId, userId)
+                .eq(SysRoleDO::getStatus, "0")
+                .distinct();
 
-        return CollUtil.newHashSet(menuIds);
+        List<SysRoleDO> roleList = userRoleMapper.selectJoinList(SysRoleDO.class, wrapper);
+        return roleList.stream().map(SysRoleDO::getRoleKey).collect(Collectors.toSet());
     }
 
-    @Override
-    public Set<Long> listMenuIdByIds(Set<Long> roleIds) {
-        return roleIds.stream()
-                .flatMap(roleId -> ((SysRoleService) AopContext.currentProxy()).listMenuIdById(roleId).stream())
-                .collect(Collectors.toSet());
-    }
+
 
     @Override
     public PageResult<SysRoleDO> listPageRole(RolePageDTO dto) {
@@ -149,31 +150,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
         // 删除角色与菜单关联
         sysRoleMenuMapper.deleteByRoleIds(roleIds);
         // 批量删除角色
-        getBaseMapper().deleteByIds(roleIds);
-        // 清除角色所关联的缓存
-        cacheEvictMenuInfoByRoleIds(roleIds);
-    }
-
-
-    @Override
-    public void cacheEvictMenuInfoByRoleIds(List<Long> roleIds) {
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                Cache roleMenuPermCache = cacheManager.getCache(CoreCacheConstants.ROLE_MENU_PERMS_KEY);
-                Cache roleMenuIdCache = cacheManager.getCache(CoreCacheConstants.ROLE_MENU_ID_KEY);
-
-                for (Long roleId : roleIds) {
-                    if (null != roleMenuPermCache) {
-                        roleMenuPermCache.evict(roleId);
-                    }
-                    if (null != roleMenuIdCache) {
-                        roleMenuIdCache.evict(roleId);
-                    }
-
-                }
-            }
-        });
+        sysRoleMapper.deleteByIds(roleIds);
     }
 
     private void doUpdateRole(RoleUpdateDTO roleUpdateDTO) {
@@ -229,10 +206,21 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
                 runnable.run();
 
             } finally {
-                lockTemplate.releaseLock(keyLock);
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCompletion(int status) {
+                        lockTemplate.releaseLock(keyLock);
+                    }
+                });
             }
         } finally {
-            lockTemplate.releaseLock(nameLock);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCompletion(int status) {
+                    lockTemplate.releaseLock(nameLock);
+                }
+            });
+
         }
     }
 

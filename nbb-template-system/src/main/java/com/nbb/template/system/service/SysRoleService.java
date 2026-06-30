@@ -16,20 +16,14 @@ import java.util.Set;
  */
 public interface SysRoleService extends IService<SysRoleDO> {
 
-
     /**
-     * 通过角色id查询对应的菜单id
-     * @param id 角色id
-     * @return
+     * 根据用户ID查询角色权限
+     *
+     * @param userId 用户ID
+     * @return 权限列表
      */
-    Set<Long> listMenuIdById(Long id);
+    Set<String> listRolePermissionByUserId(Long userId);
 
-    /**
-     * 通过角色id查询对应的菜单id
-     * @param roleIds 角色Id列表
-     * @return
-     */
-    Set<Long> listMenuIdByIds(Set<Long> roleIds);
 
     PageResult<SysRoleDO> listPageRole(RolePageDTO dto);
 
@@ -63,9 +57,4 @@ public interface SysRoleService extends IService<SysRoleDO> {
     @Transactional
     void deleteByRoleIds(List<Long> roleIds);
 
-    /**
-     * 清除角色所关联的菜单缓存信息
-     * @param roleIds 角色id列表
-     */
-    void cacheEvictMenuInfoByRoleIds(List<Long> roleIds);
 }

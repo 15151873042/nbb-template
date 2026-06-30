@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.nbb.template.system.core.domain.CommonResult;
 import com.nbb.template.system.core.domain.PageResult;
 import com.nbb.template.system.domain.dto.RoleAddDTO;
+import com.nbb.template.system.domain.dto.RoleAllocatedUserPageDTO;
 import com.nbb.template.system.domain.dto.RolePageDTO;
 import com.nbb.template.system.domain.dto.RoleUpdateDTO;
 import com.nbb.template.system.domain.entity.SysRoleDO;
@@ -70,6 +71,18 @@ public class SysRoleController {
     @DeleteMapping("/{roleIds}")
     public CommonResult<Void> remove(@PathVariable List<Long> roleIds) {
         sysRoleService.deleteByRoleIds(roleIds);
+        return CommonResult.success();
+    }
+
+    /**
+     * 查询已分配用户角色列表
+     */
+    @SaCheckPermission("system:role:list")
+    @GetMapping("/authUser/allocatedList")
+    public CommonResult<PageResult<SysRoleDO>> allocatedList(RoleAllocatedUserPageDTO pageDTO) {
+//        startPage();
+//        List<SysUser> list = userService.selectAllocatedList(user);
+//        return getDataTable(list);
         return CommonResult.success();
     }
 

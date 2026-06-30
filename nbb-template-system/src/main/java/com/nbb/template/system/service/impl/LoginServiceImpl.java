@@ -6,9 +6,7 @@ import com.nbb.template.system.core.exception.ServiceException;
 import com.nbb.template.system.domain.dto.LoginDTO;
 import com.nbb.template.system.domain.entity.SysUserDO;
 import com.nbb.template.system.domain.vo.LoginVO;
-import com.nbb.template.system.service.LoginService;
-import com.nbb.template.system.service.SysCaptchaService;
-import com.nbb.template.system.service.SysUserService;
+import com.nbb.template.system.service.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,6 +23,9 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     SysCaptchaService sysCaptchaService;
 
+    @Resource
+    SysSessionService sessionService;
+
     @Override
     public LoginVO login(LoginDTO dto) {
         // 校验验证码
@@ -37,6 +38,9 @@ public class LoginServiceImpl implements LoginService {
         }
         // 登录
         StpUtil.login(sysUserDO.getId());
+
+        // 刷新用户session信息
+        sessionService.refreshUserSession();
 
         // 获取当前登录态对应的 token
         String tokenValue = StpUtil.getTokenValue();

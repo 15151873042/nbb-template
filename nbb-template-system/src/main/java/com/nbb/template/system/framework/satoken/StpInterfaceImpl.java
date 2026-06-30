@@ -1,12 +1,15 @@
 package com.nbb.template.system.framework.satoken;
 
 import cn.dev33.satoken.stp.StpInterface;
-import cn.hutool.core.collection.CollUtil;
-import com.nbb.template.system.service.SysPermissionService;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.ListUtil;
+import com.nbb.template.system.core.utils.ServiceExceptionUtil;
+import com.nbb.template.system.service.SysSessionService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 权限认证接口，实现此接口即可集成权限认证功能
@@ -15,17 +18,27 @@ import java.util.List;
 public class StpInterfaceImpl implements StpInterface {
 
     @Resource
-    private SysPermissionService sysPermissionService;
+    private SysSessionService sysSessionService;
 
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        // 每次访问带有权限标识的接口都会回调该方法
-        return CollUtil.newArrayList(sysPermissionService.listMenuPermission(Long.valueOf((String) loginId)));
+        if (!loginId.equals(StpUtil.getLoginId())) {
+            throw ServiceExceptionUtil.exception("只能获取当前登录用户的权限码集合");
+        }
+
+        Set<String> menuPerms = sysSessionService.listMenuPermission();
+        return ListUtil.toList(menuPerms);
+
     }
 
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        return CollUtil.newArrayList(sysPermissionService.listRolePermission(Long.valueOf((String) loginId)));
+        if (!loginId.equals(StpUtil.getLoginId())) {
+            throw ServiceExceptionUtil.exception("只能获取当前登录用户的角色码集合");
+        }
+
+        Set<String> rolePerms = sysSessionService.listRolePermission();
+        return ListUtil.toList(rolePerms);
     }
 }

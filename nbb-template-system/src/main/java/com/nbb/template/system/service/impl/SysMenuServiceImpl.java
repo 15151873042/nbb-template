@@ -5,9 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nbb.template.system.constant.SystemDictConstants;
-import com.nbb.template.system.core.constant.CoreCacheConstants;
 import com.nbb.template.system.core.exception.ServiceException;
 import com.nbb.template.system.core.utils.SecurityUtils;
 import com.nbb.template.system.core.utils.StrUtil;
@@ -17,6 +15,7 @@ import com.nbb.template.system.domain.dto.MenuListDTO;
 import com.nbb.template.system.domain.dto.MenuUpdateDTO;
 import com.nbb.template.system.domain.entity.SysMenuDO;
 import com.nbb.template.system.domain.entity.SysRoleMenuDO;
+import com.nbb.template.system.domain.qo.MenuListQO;
 import com.nbb.template.system.domain.vo.MenuTreeVO;
 import com.nbb.template.system.domain.vo.MetaVO;
 import com.nbb.template.system.domain.vo.RouterVO;
@@ -24,15 +23,13 @@ import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 import com.nbb.template.system.mapper.SysMenuMapper;
 import com.nbb.template.system.mapper.SysRoleMenuMapper;
 import com.nbb.template.system.service.SysMenuService;
-import com.nbb.template.system.service.SysRoleService;
-import com.nbb.template.system.service.SysUserService;
-import org.springframework.aop.framework.AopContext;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -46,27 +43,27 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     private SysMenuMapper sysMenuMapper;
     @Resource
     private SysRoleMenuMapper sysRoleMenuMapper;
-    @Resource
-    private SysUserService sysUserService;
-    @Resource
-    private SysRoleService sysRoleService;
+
+    @Override
+    public Set<String> listMenuPermsByUserId(Long userId) {
+        return sysMenuMapper.listMenuPermsByUserId(userId);
+    }
+
+    @Override
+    public List<Long> listMenuIdByRoleId(Long roleId) {
+        return sysRoleMenuMapper.listMenuIdByRoleId(roleId);
+    }
 
     @Override
     public List<SysMenuDO> listMenu(MenuListDTO queryDTO) {
         long loginUserId = StpUtil.getLoginIdAsLong();
 
-        List<SysMenuDO> menuList = Collections.emptyList();
+        List<SysMenuDO> menuList;
         if (SecurityUtils.isAdmin(loginUserId)) {
             menuList = sysMenuMapper.listMenu(queryDTO);
         } else {
-            // 1、查询用户所关连的角色id
-            Set<Long> roleIds = sysUserService.listRoleIdById(loginUserId);
-            // 2、查询角色所关连的菜单id
-            Set<Long> menuIds = sysRoleService.listMenuIdByIds(roleIds);
-            if (CollUtil.isNotEmpty(menuIds)) {
-                // 3、查询菜单详情
-                menuList = sysMenuMapper.listMenuByIds(queryDTO, menuIds);
-            }
+            MenuListQO menuListQO = BeanUtil.copyProperties(queryDTO, MenuListQO.class);
+            menuList = sysMenuMapper.listMenuByUserId(menuListQO);
         }
         return menuList;
     }
@@ -110,57 +107,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
 
 
     @Override
-    @Cacheable(cacheNames = CoreCacheConstants.ROLE_MENU_PERMS_KEY, key = "#roleId", unless = "#result == null")
-    public Set<String> listPermsByRoleId(Long roleId) {
-        MPJLambdaWrapper<SysRoleMenuDO> wrapper = new MPJLambdaWrapper<SysRoleMenuDO>()
-                .innerJoin(SysMenuDO.class, SysMenuDO::getId, SysRoleMenuDO::getMenuId)
-                .select(SysMenuDO::getId, SysMenuDO::getPerms)
-                .eq(SysRoleMenuDO::getRoleId, roleId)
-                .distinct();
-
-        List<SysMenuDO> menuList = sysRoleMenuMapper.selectJoinList(SysMenuDO.class, wrapper);
-        return menuList.stream()
-                .map(SysMenuDO::getPerms)
-                .filter(StrUtil::isNotEmpty)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    @Cacheable(cacheNames = CoreCacheConstants.MENUS_KEY, key = "#roleId", unless = "#result == null")
-    public List<SysMenuDO> listMenuByRoleId(Long roleId) {
-        MPJLambdaWrapper<SysRoleMenuDO> wrapper = new MPJLambdaWrapper<SysRoleMenuDO>()
-                .innerJoin(SysMenuDO.class, SysMenuDO::getId, SysRoleMenuDO::getMenuId)
-                .selectAll(SysMenuDO.class)
-                .eq(SysRoleMenuDO::getRoleId, roleId)
-                .eq(SysMenuDO::getStatus, "0")
-                .in(SysMenuDO::getMenuType, "M", "C")
-                .distinct();
-
-        return sysRoleMenuMapper.selectJoinList(SysMenuDO.class, wrapper);
-    }
-
-    @Override
     public List<MenuTreeVO> getMenuTreeByUserId(long userId) {
         List<SysMenuDO> menus;
 
         if (SecurityUtils.isAdmin(userId)) {
-            menus = getBaseMapper().listMenuAll();
+            menus = sysMenuMapper.listMenuAll();
         } else {
-
-            Set<Long> roleIds = sysUserService.listRoleIdById(userId);
-
-            menus = roleIds.stream()
-                    .flatMap(roleId -> {
-                        return ((SysMenuService) AopContext.currentProxy()).listMenuByRoleId(roleId).stream();
-                    })
-                    // 多个角色含有相同的菜单时，需要对菜单进行去重
-                    .collect(Collectors.toMap(
-                            SysMenuDO::getId,
-                            Function.identity(),
-                            (existing, replacement) -> existing))
-                    .values()
-                    .stream()
-                    .collect(Collectors.toList());
+            menus = sysMenuMapper.listMenuTreeByUserId(userId);
         }
 
         return getChildPerms(menus, 0);

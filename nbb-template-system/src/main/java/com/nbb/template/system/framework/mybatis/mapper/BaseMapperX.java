@@ -1,10 +1,13 @@
 package com.nbb.template.system.framework.mybatis.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.yulichang.base.MPJBaseMapper;
 import com.nbb.template.system.core.domain.PageParam;
 import com.nbb.template.system.core.domain.PageResult;
+import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -25,6 +28,10 @@ public interface BaseMapperX<T> extends MPJBaseMapper<T> {
         selectPage(page, queryWrapper);
 
         return new PageResult<>(page.getRecords(), page.getTotal());
+    }
+
+    default T selectOne(SFunction<T, ?> field, Object value) {
+        return selectOne(new LambdaQueryWrapper<T>().eq(field, value));
     }
 
 }

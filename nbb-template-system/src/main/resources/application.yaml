@@ -16,6 +16,7 @@ mybatis-plus:
     db-config:
       logic-delete-value: id
       logic-not-delete-value: 0
+  mapper-locations: classpath*:/mapper/**/*Mapper.xml
 
 logging:
   level:

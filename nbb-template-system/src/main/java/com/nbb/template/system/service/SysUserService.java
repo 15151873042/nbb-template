@@ -28,21 +28,6 @@ public interface SysUserService extends IService<SysUserDO> {
      */
     SysUserDO getUserBasicInfo(Long id);
 
-    /**
-     *  获取所有角色的权限标识
-     * @param id 用户id
-     * @return
-     */
-    Set<String> listRoleKeyById(Long id);
-
-
-    /**
-     *  获取所有角色的id
-     * @param id 用户id
-     * @return
-     */
-    Set<Long> listRoleIdById(Long id);
-
 
 
 

@@ -84,11 +84,11 @@ public class SysMenuController {
     public CommonResult<RoleMenuTreeSelectVO> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
         List<SysMenuDO> menus = menuService.listMenu(new MenuListDTO());
         List<TreeSelectBO> treeSelect = menuService.buildMenuTreeSelect(menus);
-        Set<Long> menuIds = roleService.listMenuIdById(roleId);
+        List<Long> menuIds = menuService.listMenuIdByRoleId(roleId);
 
         RoleMenuTreeSelectVO vo = new RoleMenuTreeSelectVO();
         vo.setMenus(treeSelect);
-        vo.setCheckedKeys(ListUtil.toList(menuIds));
+        vo.setCheckedKeys(menuIds);
         return CommonResult.success(vo);
     }
 
