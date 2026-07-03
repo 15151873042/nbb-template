@@ -83,7 +83,7 @@
       <pagination
          v-show="total > 0"
          :total="total"
-         v-model:page="queryParams.pageNum"
+         v-model:page="queryParams.pageNo"
          v-model:limit="queryParams.pageSize"
          @pagination="getList"
       />
@@ -93,7 +93,7 @@
 
 <script setup name="AuthUser">
 import selectUser from "./selectUser"
-import { allocatedUserList, authUserCancel, authUserCancelAll } from "@/api/system/role"
+import {allocatedUserList, authUserCancelAll} from "@/api/system/role"
 
 const route = useRoute()
 const { proxy } = getCurrentInstance()
@@ -107,7 +107,7 @@ const total = ref(0)
 const userIds = ref([])
 
 const queryParams = reactive({
-  pageNum: 1,
+  pageNo: 1,
   pageSize: 10,
   roleId: route.params.roleId,
   userName: undefined,
@@ -117,10 +117,9 @@ const queryParams = reactive({
 /** 查询授权用户列表 */
 function getList() {
   loading.value = true
-  allocatedUserList(queryParams).then(response => {
-    const {data} = response
-    userList.value = data.list
-    total.value = data.total
+  allocatedUserList(queryParams).then(apiData => {
+    userList.value = apiData.list
+    total.value = apiData.total
     loading.value = false
   })
 }
@@ -133,7 +132,7 @@ function handleClose() {
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.pageNum = 1
+  queryParams.pageNo = 1
   getList()
 }
 
@@ -157,7 +156,7 @@ function openSelectUser() {
 /** 取消授权按钮操作 */
 function cancelAuthUser(row) {
   proxy.$modal.confirm('确认要取消该用户"' + row.userName + '"角色吗？').then(function () {
-    return authUserCancel({ userId: row.id, roleId: queryParams.roleId })
+    return authUserCancelAll({ roleId: queryParams.roleId, userIds: [row.id] })
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess("取消授权成功")
@@ -166,10 +165,8 @@ function cancelAuthUser(row) {
 
 /** 批量取消授权按钮操作 */
 function cancelAuthUserAll(row) {
-  const roleId = queryParams.roleId
-  const uIds = userIds.value.join(",")
   proxy.$modal.confirm("是否取消选中用户授权数据项?").then(function () {
-    return authUserCancelAll({ roleId: roleId, userIds: uIds })
+    return authUserCancelAll({ roleId: queryParams.roleId, userIds: userIds.value })
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess("取消授权成功")

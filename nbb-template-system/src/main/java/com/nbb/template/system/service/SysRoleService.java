@@ -2,9 +2,7 @@ package com.nbb.template.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.nbb.template.system.core.domain.PageResult;
-import com.nbb.template.system.domain.dto.RoleAddDTO;
-import com.nbb.template.system.domain.dto.RolePageDTO;
-import com.nbb.template.system.domain.dto.RoleUpdateDTO;
+import com.nbb.template.system.domain.dto.*;
 import com.nbb.template.system.domain.entity.SysRoleDO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,4 +55,21 @@ public interface SysRoleService extends IService<SysRoleDO> {
     @Transactional
     void deleteByRoleIds(List<Long> roleIds);
 
+    /**
+     * 取消授权用户角色
+     *
+     * @param cancelDTO 用户和角色关联信息
+     * @return 结果
+     */
+    void deleteAuthUser(RoleCancelAuthUserDTO cancelDTO);
+
+    /**
+     * 批量选择授权用户角色
+     *
+     * @param selectDTO 用户和角色关联信息
+     * @return 结果
+     */
+    void insertAuthUsers(RoleCancelAuthUserDTO selectDTO);
+
+    void updateRoleStatus(ChangeStatusDTO role);
 }

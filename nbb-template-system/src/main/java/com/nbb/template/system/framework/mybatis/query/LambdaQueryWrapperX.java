@@ -1,10 +1,14 @@
 package com.nbb.template.system.framework.mybatis.query;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import org.springframework.util.StringUtils;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author 胡鹏
@@ -52,8 +56,8 @@ public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
         return ObjectUtil.isNotEmpty(val) ? (LambdaQueryWrapperX)super.ne(column, val) : this;
     }
 
-    public LambdaQueryWrapperX<T> notInIfPresent(SFunction<T, ?> column, Object... values) {
-        if (ObjectUtil.isAllNotEmpty(values) && !ArrayUtil.isEmpty(values)) {
+    public LambdaQueryWrapperX<T> notInIfPresent(SFunction<T, ?> column, Collection<?> values) {
+        if (CollUtil.isNotEmpty(values)) {
             return (LambdaQueryWrapperX<T>) super.notIn(column, values);
         }
         return this;

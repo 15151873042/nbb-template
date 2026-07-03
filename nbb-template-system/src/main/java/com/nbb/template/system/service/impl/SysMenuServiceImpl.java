@@ -71,7 +71,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     @Override
     public void addMenu(MenuAddDTO dto) {
         this.checkMenuPath(dto);
-        this.checkMenuNameUnique(dto.getMenuName());
+        this.checkMenuNameUnique(dto.getMenuName(), null);
 
         SysMenuDO menuDO = BeanUtil.copyProperties(dto, SysMenuDO.class);
         sysMenuMapper.insert(menuDO);
@@ -83,7 +83,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
         }
     }
 
-    void checkMenuNameUnique(String menuName, Long... excludeMenuId) {
+    void checkMenuNameUnique(String menuName, Long excludeMenuId) {
         boolean unique = this.isMenuNameUnique(menuName, excludeMenuId);
         if (!unique) {
             throw new ServiceException("菜单'" + menuName + "'已存在");
@@ -100,7 +100,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     public boolean isMenuNameUnique(String menuName, Long... excludeMenuId) {
         LambdaQueryWrapperX<SysMenuDO> queryWrapper = new LambdaQueryWrapperX<SysMenuDO>()
                 .eq(SysMenuDO::getMenuName, menuName)
-                .notInIfPresent(SysMenuDO::getId, excludeMenuId);
+                .neIfPresent(SysMenuDO::getId, excludeMenuId);
 
         return !sysMenuMapper.exists(queryWrapper);
     }
@@ -211,7 +211,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuDO> im
     public void updateMenu(MenuUpdateDTO menu) {
         this.checkOnUpdate(menu.getId(), menu.getParentId());
         this.checkMenuPath(menu);
-        this.checkMenuNameUnique(menu.getMenuName());
+        this.checkMenuNameUnique(menu.getMenuName(), menu.getId());
 
         SysMenuDO menuDO = BeanUtil.copyProperties(menu, SysMenuDO.class);
         sysMenuMapper.updateById(menuDO);

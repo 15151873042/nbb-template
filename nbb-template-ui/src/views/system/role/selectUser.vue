@@ -46,7 +46,7 @@
          <pagination
             v-show="total > 0"
             :total="total"
-            v-model:page="queryParams.pageNum"
+            v-model:page="queryParams.pageNo"
             v-model:limit="queryParams.pageSize"
             @pagination="getList"
          />
@@ -78,7 +78,7 @@ const total = ref(0)
 const userIds = ref([])
 
 const queryParams = reactive({
-  pageNum: 1,
+  pageNo: 1,
   pageSize: 10,
   roleId: undefined,
   userName: undefined,
@@ -99,20 +99,20 @@ function clickRow(row) {
 
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  userIds.value = selection.map(item => item.userId)
+  userIds.value = selection.map(item => item.id)
 }
 
 // 查询表数据
 function getList() {
-  unallocatedUserList(queryParams).then(res => {
-    userList.value = res.rows
-    total.value = res.total
+  unallocatedUserList(queryParams).then(apiData => {
+    userList.value = apiData.list
+    total.value = apiData.total
   })
 }
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.pageNum = 1
+  queryParams.pageNo = 1
   getList()
 }
 
@@ -126,13 +126,12 @@ const emit = defineEmits(["ok"])
 /** 选择授权用户操作 */
 function handleSelectUser() {
   const roleId = queryParams.roleId
-  const uIds = userIds.value.join(",")
-  if (uIds == "") {
+  if (userIds.value.length == 0) {
     proxy.$modal.msgError("请选择要分配的用户")
     return
   }
-  authUserSelectAll({ roleId: roleId, userIds: uIds }).then(res => {
-    proxy.$modal.msgSuccess(res.msg)
+  authUserSelectAll({ roleId: roleId, userIds: userIds.value }).then(res => {
+    proxy.$modal.msgSuccess('操作成功')
     visible.value = false
     emit("ok")
   })

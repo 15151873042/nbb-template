@@ -11,9 +11,7 @@ import com.nbb.template.system.core.domain.PageResult;
 import com.nbb.template.system.core.exception.ServiceException;
 import com.nbb.template.system.core.utils.ServiceExceptionUtil;
 import com.nbb.template.system.core.utils.StrUtil;
-import com.nbb.template.system.domain.dto.RoleAddDTO;
-import com.nbb.template.system.domain.dto.RolePageDTO;
-import com.nbb.template.system.domain.dto.RoleUpdateDTO;
+import com.nbb.template.system.domain.dto.*;
 import com.nbb.template.system.domain.entity.SysRoleDO;
 import com.nbb.template.system.domain.entity.SysRoleMenuDO;
 import com.nbb.template.system.domain.entity.SysUserRoleDO;
@@ -22,7 +20,6 @@ import com.nbb.template.system.mapper.SysRoleMapper;
 import com.nbb.template.system.mapper.SysRoleMenuMapper;
 import com.nbb.template.system.mapper.SysUserRoleMapper;
 import com.nbb.template.system.service.SysRoleService;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -47,10 +44,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
 
     @Resource
     private SysRoleMenuMapper sysRoleMenuMapper;
-
-    @Resource
-    private CacheManager cacheManager;
-
 
     @Resource
     private LockTemplate lockTemplate;
@@ -152,6 +145,27 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleDO> im
         // 批量删除角色
         sysRoleMapper.deleteByIds(roleIds);
     }
+
+    @Override
+    public void deleteAuthUser(RoleCancelAuthUserDTO cancelDTO) {
+        userRoleMapper.deleteAuthUser(cancelDTO.getRoleId(), cancelDTO.getUserIds());
+    }
+
+    @Override
+    public void insertAuthUsers(RoleCancelAuthUserDTO selectDTO) {
+        List<SysUserRoleDO> userRoles = selectDTO.getUserIds().stream()
+                .map(userId -> new SysUserRoleDO(userId, selectDTO.getRoleId()))
+                .collect(Collectors.toList());
+        userRoleMapper.insert(userRoles);
+    }
+
+    @Override
+    public void updateRoleStatus(ChangeStatusDTO updateDTO) {
+        SysRoleDO sysRoleDO = BeanUtil.copyProperties(updateDTO, SysRoleDO.class);
+
+        sysRoleMapper.updateById(sysRoleDO);
+    }
+
 
     private void doUpdateRole(RoleUpdateDTO roleUpdateDTO) {
         // 角色表新增数据

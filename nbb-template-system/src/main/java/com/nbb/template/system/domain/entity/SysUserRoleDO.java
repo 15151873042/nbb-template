@@ -1,9 +1,7 @@
 package com.nbb.template.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * 用户和角色关联 sys_user_role
@@ -14,6 +12,8 @@ import lombok.ToString;
 @TableName("sys_user_role")
 @EqualsAndHashCode
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SysUserRoleDO {
     /**
      * 用户ID
