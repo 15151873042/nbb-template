@@ -314,19 +314,18 @@ function getList() {
   const params = {...queryParams.value, beginTime, endTime};
 
 
-  listUser(params).then(res => {
-    const {data} = res
+  listUser(params).then(apiData => {
     loading.value = false
-    userList.value = data.list
-    total.value = data.total
+    userList.value = apiData.list
+    total.value = apiData.total
   })
 }
 
 /** 查询部门下拉树结构 */
 function getDeptTree() {
-  deptTreeSelect().then(response => {
-    deptOptions.value = response.data
-    enabledDeptOptions.value = filterDisabledDept(JSON.parse(JSON.stringify(response.data)))
+  deptTreeSelect().then(apiData => {
+    deptOptions.value = apiData
+    enabledDeptOptions.value = filterDisabledDept(JSON.parse(JSON.stringify(apiData)))
   })
 }
 
@@ -549,8 +548,8 @@ function submitForm() {
 onMounted(() => {
   getDeptTree()
   getList()
-  proxy.getConfigKey("sys.user.initPassword").then(response => {
-    initPassword.value = response.msg
+  proxy.getConfigKey("sys.user.initPassword").then(apiData => {
+    initPassword.value = apiData
   })
 })
 </script>

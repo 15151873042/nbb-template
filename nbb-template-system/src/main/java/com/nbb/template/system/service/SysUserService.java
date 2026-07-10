@@ -3,6 +3,7 @@ package com.nbb.template.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.nbb.template.system.core.domain.PageResult;
 import com.nbb.template.system.domain.dto.RoleAllocatedUserPageDTO;
+import com.nbb.template.system.domain.dto.UserPageDTO;
 import com.nbb.template.system.domain.entity.SysConfigDO;
 import com.nbb.template.system.domain.entity.SysUserDO;
 import com.nbb.template.system.mapper.SysUserMapper;
@@ -45,4 +46,6 @@ public interface SysUserService extends IService<SysUserDO> {
      * @return 用户信息集合信息
      */
     PageResult<SysUserDO> selectUnallocatedList(RoleAllocatedUserPageDTO pageDTO);
+
+    PageResult<SysUserDO> selectUserList(UserPageDTO dto);
 }

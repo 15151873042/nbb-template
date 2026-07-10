@@ -1,14 +1,18 @@
 package com.nbb.template.system.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.nbb.template.system.core.domain.PageResult;
 import com.nbb.template.system.domain.dto.RoleAllocatedUserPageDTO;
+import com.nbb.template.system.domain.dto.UserPageDTO;
 import com.nbb.template.system.domain.entity.SysUserDO;
 import com.nbb.template.system.domain.entity.SysUserRoleDO;
+import com.nbb.template.system.domain.qo.UserPageQO;
 import com.nbb.template.system.framework.mybatis.query.LambdaQueryWrapperX;
+import com.nbb.template.system.mapper.SysDeptMapper;
 import com.nbb.template.system.mapper.SysUserMapper;
 import com.nbb.template.system.mapper.SysUserRoleMapper;
 import com.nbb.template.system.service.SysUserService;
@@ -28,6 +32,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
 
     @Resource
     private SysUserRoleMapper userRoleMapper;
+
+    @Resource
+    private SysDeptMapper deptMapper;
 
     @Override
     public SysUserDO selectUserByUserName(String userName) {
@@ -77,5 +84,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserDO> im
                 .likeIfPresent(SysUserDO::getPhonenumber, pageDTO.getPhonenumber());
 
         return userMapper.selectPage(pageDTO, queryWrapper);
+    }
+
+    @Override
+    public PageResult<SysUserDO> selectUserList(UserPageDTO dto) {
+        UserPageQO qo = BeanUtil.copyProperties(dto, UserPageQO.class);
+
+        // 查询部门下的所有子孙部门
+        if (null != dto.getDeptId()) {
+            List<Long> deptIds = deptMapper.getAllChildrenIdByDeptId(dto.getDeptId());
+            qo.setDeptIds(deptIds);
+        }
+
+        return userMapper.listPageUser(qo);
     }
 }

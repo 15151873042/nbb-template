@@ -1,5 +1,6 @@
 package com.nbb.template.system.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.nbb.template.system.core.domain.CommonResult;
 import com.nbb.template.system.domain.vo.CaptchaImageVO;
 import com.nbb.template.system.service.SysCaptchaService;
