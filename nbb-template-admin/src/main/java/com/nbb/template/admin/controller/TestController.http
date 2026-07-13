@@ -23,3 +23,13 @@ Content-Type: application/json
     "long2": "12345678901234567",
     "bigDecimal": "123.4567890123456789"
 }
+
+
+###
+POST http://127.0.0.1:9090/
+Content-Type: application/json
+
+{
+  "name": "zs",
+  "age": 10
+}
